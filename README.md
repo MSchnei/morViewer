@@ -33,4 +33,5 @@ pip install PyOpenGL PyOpenGL_accelerate
 
 ### clone repository
 cd home/user/git/
+
 git clone https://github.com/MSchnei/morphView.git
