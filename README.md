@@ -17,7 +17,9 @@ such as opening and closing using the excellent pyqt graph.
 
 ### create virtual environment (optional)
 conda create --name envMorpViewer python=2.7
+
 source activate envMorpViewer
+
 conda install pip
 
 ### install basics
@@ -28,3 +30,7 @@ conda install -c anaconda pyqtgraph=0.10.0
 
 ### install pyOpenGL (optional)
 pip install PyOpenGL PyOpenGL_accelerate
+
+### clone repository
+cd home/user/git/
+git clone https://github.com/MSchnei/morphView.git
