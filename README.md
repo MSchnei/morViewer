@@ -15,16 +15,16 @@ such as opening and closing using the excellent pyqt graph.
 
 ## Installation & Quick Start
 
-# create virtual environment (optional)
+### create virtual environment (optional)
 conda create --name envMorpViewer python=2.7
 source activate envMorpViewer
 conda install pip
 
-# install basics
+### install basics
 pip install numpy scipy nibabel
 
-# install pyqt graph
+### install pyqt graph
 conda install -c anaconda pyqtgraph=0.10.0
 
-# install pyOpenGL (optional)
+### install pyOpenGL (optional)
 pip install PyOpenGL PyOpenGL_accelerate
