@@ -16,22 +16,22 @@ such as opening and closing using the excellent pyqt graph.
 ## Installation & Quick Start
 
 ### create virtual environment (optional)
-conda create --name envMorpViewer python=2.7
+`conda create --name envMorpViewer python=2.7`
 
-source activate envMorpViewer
+`source activate envMorpViewer`
 
-conda install pip
+`conda install pip`
 
 ### install basics
-pip install numpy scipy nibabel
+`pip install numpy scipy nibabel`
 
 ### install pyqt graph
-conda install -c anaconda pyqtgraph=0.10.0
+`conda install -c anaconda pyqtgraph=0.10.0`
 
 ### install pyOpenGL (optional)
-pip install PyOpenGL PyOpenGL_accelerate
+`pip install PyOpenGL PyOpenGL_accelerate`
 
 ### clone repository
-cd home/user/git/
+`cd home/user/git/`
 
-git clone https://github.com/MSchnei/morphView.git
+`git clone https://github.com/MSchnei/morphView.git`
