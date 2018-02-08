@@ -7,7 +7,6 @@ Created on Fri Apr 21 11:48:19 2017
 """
 
 import os
-import numpy as np
 from nibabel import load, save, Nifti1Image
 from pyqtgraph.Qt import QtGui
 from scipy.ndimage import morphology
@@ -46,9 +45,6 @@ basename = nii.get_filename().split(os.extsep, 1)[0]
 dirname = os.path.dirname(nii.get_filename())
 
 data = nii.get_data()
-# show smallest axis first
-#origShape = data.shape
-#data = np.transpose(data, np.argsort(data.shape))
 
 # %% define functions for updating
 
@@ -77,37 +73,6 @@ def updateDil():
     imv1.setCurrentIndex(tempIdx)
 
 
-def setEverySecVoxel():
-    global data, imv1
-    # get current index
-    tempIdx = imv1.currentIndex
-    # identify voxels greater than 0
-    boolMask = np.greater(data, 0)
-    # set every second voxel to 50 and every other to 100
-    process = data[boolMask]
-    process[::2] = 100
-    process[1::2] = 50
-    data[boolMask] = process
-    # update image of nii data
-    imv1.setImage(data, autoRange=False, autoHistogramRange=False)
-    # set index
-    imv1.setCurrentIndex(tempIdx)
-
-
-def undoEverySecVoxel():
-    global data, imv1
-    # get current index
-    tempIdx = imv1.currentIndex
-    # identify voxels greater than 0
-    boolMask = np.greater(data, 0)
-    # set every voxel greater than 0 to 1
-    data[boolMask] = 1
-    # update image of nii data
-    imv1.setImage(data, autoRange=False, autoHistogramRange=False)
-    # set index
-    imv1.setCurrentIndex(tempIdx)
-
-
 def updateSave():
     global data
     # save as nifti
@@ -123,9 +88,7 @@ imv1 = pg.image(data)
 # create a push button widget
 btn1 = QtGui.QPushButton('Erosion')
 btn2 = QtGui.QPushButton('Dilate')
-btn3 = QtGui.QPushButton('DiverseVoxels')
-btn4 = QtGui.QPushButton('BinarizeVoxels')
-btn5 = QtGui.QPushButton('Save')
+btn3 = QtGui.QPushButton('Save')
 
 # add the image widget to the layout in its proper positions
 l.addWidget(imv1, 0, 0)
@@ -133,17 +96,11 @@ l.addWidget(imv1, 0, 0)
 l.addWidget(btn1, 1, 0)
 l.addWidget(btn2, 2, 0)
 l.addWidget(btn3, 3, 0)
-l.addWidget(btn4, 4, 0)
-l.addWidget(btn5, 5, 0)
 
 # define what the buttons should do when clicked
-# check for more options:
-# https://www.tutorialspoint.com/pyqt/pyqt_qpushbutton_widget.htm
 btn1.clicked.connect(updateEro)
 btn2.clicked.connect(updateDil)
-btn3.clicked.connect(setEverySecVoxel)
-btn4.clicked.connect(undoEverySecVoxel)
-btn5.clicked.connect(updateSave)
+btn3.clicked.connect(updateSave)
 
 
 # %%
