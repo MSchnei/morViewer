@@ -60,7 +60,7 @@ def updateEro():
     # perform erode
     data = morphology.binary_erosion(data, iterations=1)
     # update image of nii data
-    imv1.setImage(data)
+    imv1.setImage(data, autoRange=False, autoHistogramRange=False)
     # set index
     imv1.setCurrentIndex(tempIdx)
 
@@ -72,7 +72,7 @@ def updateDil():
     # perform dilate
     data = morphology.binary_dilation(data, iterations=1)
     # update image of nii data
-    imv1.setImage(data)
+    imv1.setImage(data, autoRange=False, autoHistogramRange=False)
     # set index
     imv1.setCurrentIndex(tempIdx)
 
@@ -89,7 +89,7 @@ def setEverySecVoxel():
     process[1::2] = 50
     data[boolMask] = process
     # update image of nii data
-    imv1.setImage(data)
+    imv1.setImage(data, autoRange=False, autoHistogramRange=False)
     # set index
     imv1.setCurrentIndex(tempIdx)
 
@@ -103,7 +103,7 @@ def undoEverySecVoxel():
     # set every voxel greater than 0 to 1
     data[boolMask] = 1
     # update image of nii data
-    imv1.setImage(data)
+    imv1.setImage(data, autoRange=False, autoHistogramRange=False)
     # set index
     imv1.setCurrentIndex(tempIdx)
 
