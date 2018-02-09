@@ -9,6 +9,7 @@ Created on Thu Feb  8 19:49:03 2018
 import os
 from nibabel import load, save, Nifti1Image
 from PyQt4 import QtCore, QtGui
+import pyqtgraph as pg
 
 # %% set parameters
 
@@ -37,17 +38,16 @@ class Widget(QtGui.QWidget):
         self.view = QtGui.QGraphicsView(self.scene)
         self.layout.addWidget(self.view)
 
-        self.image = QtGui.QGraphicsPixmapItem()
+        self.image = pg.ImageItem()
         self.scene.addItem(self.image)
         self.view.centerOn(self.image)
-
-        self._images = data
+        self.data = data
 
         self.slider = QtGui.QSlider(self)
         self.slider.setOrientation(QtCore.Qt.Horizontal)
         self.slider.setMinimum(0)
         # max is the last index of the image list
-        self.slider.setMaximum(len(self._images)-1)
+        self.slider.setMaximum(self.data.shape[1]-1)
         self.layout.addWidget(self.slider)
 
         # set it to the first image, if you want.
@@ -58,7 +58,7 @@ class Widget(QtGui.QWidget):
     def sliderMoved(self, val):
         print "Slider moved to:", val
         try:
-            self.image.setPixmap(self._images[val])
+            self.image.setImage(data[:, val, :])
         except IndexError:
             print "Error: No image at index", val
 
