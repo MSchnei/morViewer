@@ -46,8 +46,7 @@ class Widget(QtGui.QWidget):
         self.scene.addItem(self.image)
         # add scene to view
         self.view = QtGui.QGraphicsView(self.scene)
-
-        # add view to layout
+        # add view (with scene, with image) to layout
         self.layout.addWidget(self.view, 0, 0)
 
         # add slider
@@ -60,13 +59,10 @@ class Widget(QtGui.QWidget):
 
         # set it to the center image, if you want.
         self.sliderMoved(int((self.data.shape[1]-1)/2.))
-
         self.slider.sliderMoved.connect(self.sliderMoved)
 
         # scale view object that embeds image to full screen
-        widthScale = np.floor(self.width() / self.scene.sceneRect().width())
-        heightScale = np.floor(self.height() / self.scene.sceneRect().height())
-        self.view.scale(widthScale, heightScale)
+        self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
 
     def sliderMoved(self, val):
         print "Slider moved to:", val
@@ -75,6 +71,11 @@ class Widget(QtGui.QWidget):
         except IndexError:
             print "Error: No image at index", val
 
+    def resizeEvent(self, event):
+        # if the window is resized
+        super(Widget, self).resizeEvent(event)
+        # scale view object that embeds image to full screen
+        self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
 
 # %% render
 app = QtGui.QApplication([])
