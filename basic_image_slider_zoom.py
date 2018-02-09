@@ -35,32 +35,31 @@ class ViewData(pg.GraphicsLayoutWidget):
     def __init__(self, parent=None):
         super(ViewData, self).__init__(parent)
 
+#        layout = QtGui.QGridLayout()
+#        w.setLayout(layout)
+        
+        # get the data
+        self.data = data
+
+        # add the image
         self.view = self.addViewBox()
         # lock the aspect ratio so pixels are always square
         self.view.setAspectLocked(True)
-
-        self.data = data
- 
         # Create image item
         self.img = pg.ImageItem()
-        self.img.setImage(data[:, 100, :])
-
         self.view.addItem(self.img)
 
         # add slider
         self.slider = QtGui.QSlider(self)
         self.slider.setOrientation(QtCore.Qt.Horizontal)
         self.slider.setMinimum(0)
-        # max is the last index of the image list
         self.slider.setMaximum(self.data.shape[1]-1)
 
         # set it to the center image, if you want.
         self.sliderMoved(int((self.data.shape[1]-1)/2.))
         self.slider.sliderMoved.connect(self.sliderMoved)
 
-
     def sliderMoved(self, val):
-        print "Slider moved to:", val
         try:
             self.img.setImage(data[:, val, :])
         except IndexError:
@@ -73,7 +72,7 @@ class ViewData(pg.GraphicsLayoutWidget):
 #        self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
 
 # %% render
-app = QtGui.QApplication(sys.argv)      
-vd = ViewData()               
-vd.show()                      
-app.exec_()                  
+app = QtGui.QApplication(sys.argv)
+vd = ViewData()
+vd.show()
+app.exec_()
