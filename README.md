@@ -1,7 +1,7 @@
 # Morphology Viewer
 
 The aim is to provide an easy way of visualizing basic morphology operations
-such as opening and closing using the excellent pyqt graph.
+such as erosion and dilation using the excellent pyqt graph interface.
 
 ## Core dependencies
 [**Python 2.7**](https://www.python.org/download/releases/2.7/)
