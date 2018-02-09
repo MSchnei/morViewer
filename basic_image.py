@@ -39,7 +39,6 @@ view.addItem(img)
 # Set initial view bounds
 view.setRange(QtCore.QRectF(0, 0, 600, 600))
 
-
 # %% import data
 
 # load data
