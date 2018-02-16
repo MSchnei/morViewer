@@ -38,16 +38,14 @@ class Widget(QtGui.QWidget):
         # define the data
         self.data = data
 
-        self.win = pg.GraphicsWindow(title="Basic plotting examples")
-        self.view = self.win.addViewBox()
-
-        # image item needs to be embedded in a view, which in turn is embedded
-        # in a scene in oder to be able to add it to layout
+        # image item needs to be embedded in a view box, which in turn is
+        # embedded in a graphics window in oder to be able to add it to layout
+        self.win = pg.GraphicsWindow(size=(self.data.shape[0],
+                                           self.data.shape[2]))
+        self.viewbox = self.win.addViewBox()
         self.image = pg.ImageItem()
-
-        self.view.addItem(self.image)
-
-        # add view (with scene, with image) to layout
+        self.viewbox.addItem(self.image)
+        # add window (with viewbox, with image) to layout
         self.layout.addWidget(self.win, 0, 0)
 
         # add slider
@@ -63,7 +61,9 @@ class Widget(QtGui.QWidget):
         self.slider.sliderMoved.connect(self.sliderMoved)
 
         # scale view object that embeds image to full screen
-#        self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
+#        self.win.fitInView(QtCore.QRectF, QtCore.Qt.KeepAspectRatio)
+
+#        self.scene.sceneRect()
 
     def sliderMoved(self, val):
         print "Slider moved to:", val
@@ -72,11 +72,11 @@ class Widget(QtGui.QWidget):
         except IndexError:
             print "Error: No image at index", val
 
-    def resizeEvent(self, event):
-        # if the window is resized
-        super(Widget, self).resizeEvent(event)
-        # scale view object that embeds image to full screen
-        self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
+#    def resizeEvent(self, event):
+#        # if the window is resized
+#        super(Widget, self).resizeEvent(event)
+#        # scale view object that embeds image to full screen
+#        self.viewbox.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
 
 # %% render
 app = QtGui.QApplication([])
