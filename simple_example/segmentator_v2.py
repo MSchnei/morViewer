@@ -16,7 +16,7 @@ WIN.show()
 # sys.exit(APP.exec_())
 
 # Get MRI DATA
-NII = load('/home/faruk/gdrive/Segmentator/data/amaia/T1w.nii.gz')
+NII = load('/home/marian/Documents/Testing/testMorphViewer/testIma.nii.gz')
 DATA = NII.get_data()
 
 # Interface related
