@@ -16,9 +16,9 @@ such as erosion and dilation using the excellent pyqt graph interface.
 ## Installation & Quick Start
 
 ### create virtual environment (optional)
-`conda create --name envMorpViewer python=2.7`
+`conda create --name envMorphViewer python=2.7`
 
-`source activate envMorpViewer`
+`source activate envMorphViewer`
 
 `conda install pip`
 
