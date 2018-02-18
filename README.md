@@ -36,4 +36,4 @@ such as erosion and dilation using the excellent pyqt graph interface.
 ### clone repository
 `cd home/user/git/`
 
-`git clone https://github.com/MSchnei/morphView.git`
+`git clone https://github.com/MSchnei/morphViewer.git`
