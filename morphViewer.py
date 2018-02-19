@@ -5,6 +5,7 @@ import pyqtgraph as pg
 from PyQt4 import QtCore, QtGui
 from nibabel import load, save, Nifti1Image
 from scipy.ndimage import morphology
+import numpy as np
 
 # %% set parameters
 
@@ -25,16 +26,18 @@ data = nii.get_data()
 
 class morphViewer(QtGui.QWidget):
 
-    def __init__(self, parent=None, name="morphViewer"):
+    def __init__(self, inIma, parent=None, name="morphViewer"):
         super(morphViewer, self).__init__(parent)
 
         # set initial window size
         self.resize(800, 800)
         # set initial slider value
         self.val = 0
+        # set initial cycle view value
+        self.cycleCount = 0
 
         # define the data
-        self.data = data
+        self.data = inIma
         self.datatype = self.data.dtype
 
         # define a layout
@@ -76,7 +79,7 @@ class morphViewer(QtGui.QWidget):
         self.setObjectName("horizontalSlider")
         # set minimum and maximum of slider
         self.horizontalSlider.setMinimum(0)
-        self.horizontalSlider.setMaximum(self.data.shape[1]-1)
+        self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
         self.gridLayout.addWidget(self.horizontalSlider, 4, 0, 1, 2)
 
         # make the slider reactive to changes
@@ -93,7 +96,7 @@ class morphViewer(QtGui.QWidget):
     def sliderMoved(self, val):
         self.val = val
         try:
-            self.image.setImage(self.data[:, self.val, :])
+            self.image.setImage(self.data[..., self.val])
         except IndexError:
             print("Error: No image at index", self.val)
 
@@ -103,7 +106,7 @@ class morphViewer(QtGui.QWidget):
         # convert to original data type
         self.data = self.data.astype(self.datatype)
         # update image of nii data
-        self.image.setImage(self.data[:, self.val, :])
+        self.image.setImage(self.data[..., self.val])
 
     def updateDil(self):
         # perform dilate
@@ -111,13 +114,27 @@ class morphViewer(QtGui.QWidget):
         # convert to original data type
         self.data = self.data.astype(self.datatype)
         # update image of nii data
-        self.image.setImage(self.data[:, self.val, :])
+        self.image.setImage(self.data[..., self.val])
 
     def updateSave(self):
-        # save as nifti
-        out = Nifti1Image(self.data, header=nii.header, affine=nii.affine)
-        save(out, basename + "_morph.nii.gz")
-        print("data saved as: " + basename + "_morph.nii.gz")
+        # put the permuted indices back to their original format
+        cycBackPerm = (self.cycleCount, (self.cycleCount+1) % 3,
+                       (self.cycleCount+2) % 3)
+        # create copy for export, which can be transposed back
+        outData = np.copy(self.data)
+        outData = np.transpose(outData, cycBackPerm)
+        # prepare saving as nifti
+        out = Nifti1Image(outData, header=nii.header, affine=nii.affine)
+        # get new flex file name and check for overwriting
+        self.nrExports = 0
+        self.flexfilename = '_morph_' + str(self.nrExports) + '.nii.gz'
+        while os.path.isfile(basename + self.flexfilename):
+            self.nrExports += 1
+            self.flexfilename = '_labels_' + str(self.nrExports) + '.nii.gz'
+        save(out, basename + self.flexfilename)
+        # save as nii
+        print("successfully exported morph image as: \n" +
+              basename + self.flexfilename)
 
     def updateCluster(self):
         # perform cluster thresholding
@@ -129,7 +146,16 @@ class morphViewer(QtGui.QWidget):
 
     def updateCycle(self):
         # cycle through different image views
-        print("Not implemented")
+        """Cycle through views."""
+        # take count of the cycles
+        self.cycleCount = (self.cycleCount + 1) % 3
+        # transpose data
+        self.data = np.transpose(self.data, (2, 0, 1))
+        # transpose ima2volHistMap
+        self.image.setImage(self.data[..., self.val])
+        # updates slider
+        self.horizontalSlider.setMinimum(0)
+        self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
 
     def updateRotate(self):
         # rotate the image view
@@ -137,7 +163,7 @@ class morphViewer(QtGui.QWidget):
 
 # %% render
 app = QtGui.QApplication([])
-mV = morphViewer()
+mV = morphViewer(data)
 mV.show()
 mV.raise_()
 app.exec_()
