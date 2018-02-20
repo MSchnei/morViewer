@@ -29,16 +29,16 @@ class morphViewer(QtGui.QWidget):
     def __init__(self, inIma, parent=None, name="morphViewer"):
         super(morphViewer, self).__init__(parent)
 
+        # define the data
+        self.data = inIma
+        # define data type
+        self.datatype = self.data.dtype
         # set initial window size
         self.resize(800, 800)
         # set initial slider value
-        self.val = 0
+        self.val = int((self.data.shape[-1]-1)/2.)
         # set initial cycle view value
         self.cycleCount = 0
-
-        # define the data
-        self.data = inIma
-        self.datatype = self.data.dtype
 
         # define a layout
         self.gridLayout = QtGui.QGridLayout(self)
@@ -48,6 +48,7 @@ class morphViewer(QtGui.QWidget):
         self.graphicsView = pg.GraphicsWindow()
         self.viewbox = self.graphicsView.addViewBox(lockAspect=1)  # aspect rat
         self.image = pg.ImageItem()
+        self.image.setImage(self.data[..., self.val])
         self.viewbox.addItem(self.image)
         self.gridLayout.addWidget(self.graphicsView, 0, 0, 4, 2)
 
@@ -77,9 +78,10 @@ class morphViewer(QtGui.QWidget):
         self.horizontalSlider = QtGui.QSlider(self)
         self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
         self.setObjectName("horizontalSlider")
-        # set minimum and maximum of slider
+        # set minimum, maximum and starting value of slider
         self.horizontalSlider.setMinimum(0)
         self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
+        self.horizontalSlider.setValue(self.val)
         self.gridLayout.addWidget(self.horizontalSlider, 4, 0, 1, 2)
 
         # make the slider reactive to changes
