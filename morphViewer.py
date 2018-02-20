@@ -82,6 +82,8 @@ class morphViewer(QtGui.QWidget):
         self.horizontalSlider.setMinimum(0)
         self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
         self.horizontalSlider.setValue(self.val)
+        self.horizontalSlider.setTickPosition(QtGui.QSlider.TicksBelow)
+        self.horizontalSlider.setTickInterval(5)
         self.gridLayout.addWidget(self.horizontalSlider, 4, 0, 1, 2)
 
         # make the slider reactive to changes
