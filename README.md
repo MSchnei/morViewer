@@ -27,8 +27,11 @@ such as erosion and dilation using the excellent pyqt graph interface.
 ### install basics
 `pip install numpy scipy nibabel`
 
-### install pyqt graph
+### install pyqtgraph
 `conda install -c anaconda pyqtgraph=0.10.0`
+
+### install PyQt4
+`conda install pyqt=4`
 
 ### install pyOpenGL (optional)
 `pip install PyOpenGL PyOpenGL_accelerate`
