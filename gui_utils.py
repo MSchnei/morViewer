@@ -7,12 +7,12 @@ Created on Thu Feb 22 22:43:38 2018
 """
 
 import os
+import numpy as np
 import pyqtgraph as pg
 from PyQt4 import QtCore, QtGui
 from nibabel import save, Nifti1Image, Nifti1Header
 from scipy.ndimage import morphology
-import numpy as np
-
+from skimage.measure import label
 
 class morphViewer(QtGui.QWidget):
 
@@ -144,8 +144,26 @@ class morphViewer(QtGui.QWidget):
               self.basename + self.flexfilename)
 
     def updateCluster(self):
+        # set connectivity and cluster threhold
+        # later these values should be gotten from other scroll widget
+        connectivity = 2
+        c_thr = 26
         # perform cluster thresholding
-        print("Not implemented")
+        self.data = label(self.data, connectivity=connectivity)
+        labels, counts = np.unique(self.data, return_counts=True)
+        print(str(labels.size) + ' clusters are found.')
+        print('Applying connected clusters threshold (' + str(c_thr) +
+              ' voxels).')
+        for i, (i_label, i_count) in enumerate(zip(labels[1:], counts[1:])):
+            if i_count < c_thr:
+                self.data[self.data == i_label] = 0
+        self.data[self.data != 0] = 1
+        # return with old data type
+        self.data = self.data.astype(self.data.dtype)
+        # update image of nii data
+        self.image.setImage(self.data[..., self.val])
+        # print finish message
+        print('Cluster thresholding done.')
 
     def updateReset(self):
         # reset layout to initial state
@@ -158,7 +176,7 @@ class morphViewer(QtGui.QWidget):
         self.cycleCount = (self.cycleCount + 1) % 3
         # transpose data
         self.data = np.transpose(self.data, (2, 0, 1))
-        # transpose ima2volHistMap
+        # update image of nii data
         self.image.setImage(self.data[..., self.val])
         # updates slider
         self.horizontalSlider.setMinimum(0)
