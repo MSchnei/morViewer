@@ -8,17 +8,19 @@ such as erosion and dilation using the excellent pyqt graph interface.
 ## Core dependencies
 [**Python 3.5**](https://www.python.org/download/releases/3.5/)
 
-| Package                                 | Tested version |
-|-----------------------------------------|----------------|
-| [NumPy](http://www.numpy.org/)          | 1.11.1         |
-| [Scipy](https://www.scipy.org/)         | 0.19.0         |
-| [NiBabel](http://nipy.org/nibabel/)     | 2.1.0          |
-| [Pyqtgraph](http://www.pyqtgraph.org/)  | 0.10.0         |
+| Package                                   | Tested version |
+|-------------------------------------------|----------------|
+| [NumPy](http://www.numpy.org/)            | 1.14.1         |
+| [Scipy](https://www.scipy.org/)           | 1.0.0          |
+| [NiBabel](http://nipy.org/nibabel/)       | 2.2.1          |
+| [Pyqtgraph](http://www.pyqtgraph.org/)    | 0.10.0         |
+| [scikit-image](http://scikit-image.org)   | 0.13.1         |
+| [pyqt](https://en.wikipedia.org/wiki/PyQt)| 4.11.4         |
 
 ## Installation & Quick Start
 
 ### create virtual environment (optional)
-`conda create --name envMorphViewer python=2.7`
+`conda create --name envMorphViewer python=3.5`
 
 `source activate envMorphViewer`
 
