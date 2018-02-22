@@ -6,7 +6,7 @@ such as erosion and dilation using the excellent pyqt graph interface.
 <img src="morphViewer.png" width=420 align="center" />
 
 ## Core dependencies
-[**Python 2.7**](https://www.python.org/download/releases/2.7/)
+[**Python 3.5**](https://www.python.org/download/releases/3.5/)
 
 | Package                                 | Tested version |
 |-----------------------------------------|----------------|
@@ -29,6 +29,9 @@ such as erosion and dilation using the excellent pyqt graph interface.
 
 ### install pyqtgraph
 `conda install -c anaconda pyqtgraph=0.10.0`
+
+### install scikit-image
+`conda install -c anaconda scikit-image`
 
 ### install PyQt4
 `conda install pyqt=4`
