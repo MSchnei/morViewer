@@ -28,6 +28,10 @@ class morphViewer(QtGui.QWidget):
         self.resize(800, 800)
         # set initial slider value
         self.val = int((self.data.shape[-1]-1)/2.)
+        # set initial connectivity value
+        self.cnntvty_val = 2
+        # set cluster size value
+        self.c_size_val = 26
         # set initial cycle view value
         self.cycleCount = 0
         # set affine
@@ -93,10 +97,16 @@ class morphViewer(QtGui.QWidget):
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.gridLayout.addLayout(self.horizontalLayout, 2, 2, 1, 1)
         
-        self.c_thresh = QtGui.QSpinBox(self)
-        self.horizontalLayout.addWidget(self.c_thresh)
+        self.cnntvty = QtGui.QSpinBox(self)
+        self.cnntvty.setMinimum(1)
+        self.cnntvty.setValue(self.cnntvty_val)
+        self.cnntvty.setMaximum(len(self.data.shape))
+        self.horizontalLayout.addWidget(self.cnntvty)
         
         self.c_size = QtGui.QSpinBox(self)
+        self.c_size.setMinimum(1)
+        self.c_size.setValue(self.c_size_val)
+        self.c_size.setMaximum(100)
         self.horizontalLayout.addWidget(self.c_size)
         
         self.Cluster = QtGui.QPushButton("Cluster")
@@ -104,6 +114,10 @@ class morphViewer(QtGui.QWidget):
 
         # make the slider reactive to changes
         self.horizontalSlider.sliderMoved.connect(self.sliderMoved)
+        # make the spin boxes reactive to changes
+        self.cnntvty.valueChanged.connect(self.updateCnntvty)
+        self.c_size.valueChanged.connect(self.updateCsize)
+
         # make buttons reactive
         self.Erode.clicked.connect(self.updateEro)
         self.Dilate.clicked.connect(self.updateDil)
@@ -157,18 +171,15 @@ class morphViewer(QtGui.QWidget):
               self.basename + self.flexfilename)
 
     def updateCluster(self):
-        # set connectivity and cluster threhold
-        # later these values should be gotten from other scroll widget
-        connectivity = 2
-        c_thr = 26
         # perform cluster thresholding
-        self.data = label(self.data, connectivity=connectivity)
+        self.data = label(self.data, connectivity=self.cnntvty_val)
         labels, counts = np.unique(self.data, return_counts=True)
         print(str(labels.size) + ' clusters are found.')
-        print('Applying connected clusters threshold (' + str(c_thr) +
-              ' voxels).')
+        print('Applying connected clusters threshold with \n cluster size ' +
+              str(self.c_size_val) + ' and \n connectivity ' +
+              str(self.cnntvty_val))
         for i, (i_label, i_count) in enumerate(zip(labels[1:], counts[1:])):
-            if i_count < c_thr:
+            if i_count < self.c_size_val:
                 self.data[self.data == i_label] = 0
         self.data[self.data != 0] = 1
         # return with old data type
@@ -198,3 +209,13 @@ class morphViewer(QtGui.QWidget):
     def updateRotate(self):
         # rotate the image view
         print("Not implemented")
+
+    def updateCnntvty(self):
+        # update connectivity value
+        self.cnntvty_val = self.cnntvty.value()
+        print("Connectivity set to " + str(self.cnntvty_val))
+
+    def updateCsize(self):
+        # update cluster size value
+        self.c_size_val = self.c_size.value()
+        print("Cluster size set to " + str(self.c_size_val))        
