@@ -1,9 +1,10 @@
-<img src="morphViewer.png" width=420 align="right" />
+<img src="morphViewer.png" width=300 align="right" />
 
 # Morphology Viewer [work in progress...]
 
-The aim is to provide an easy way of visualizing basic morphology operations
-such as erosion and dilation using the excellent pyqt graph interface.
+The aim of this project is to provide a user friendly interface to visualize basic morphology operations on binary volumetric images.
+
+Morphological operations such as erosion and dilation are visualized in real-time by making use of the lightning fast [PyQtGraph](http://www.pyqtgraph.org/) package. The processed images can be exported as Nifti files.
 
 ## Core dependencies
 [**Python 3.5**](https://www.python.org/download/releases/3.5/)
