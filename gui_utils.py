@@ -43,7 +43,7 @@ class morphViewer(QtGui.QWidget):
         # set basename
         self.basename = basename
 
-        # define a layout
+        # define a grid layout
         self.gridLayout = QtGui.QGridLayout(self)
         self.gridLayout.setObjectName("gridLayout")
 
@@ -53,7 +53,7 @@ class morphViewer(QtGui.QWidget):
         self.image = pg.ImageItem()
         self.image.setImage(self.data[..., self.val])
         self.viewbox.addItem(self.image)
-        self.gridLayout.addWidget(self.graphicsView, 0, 0, 4, 2)
+        self.gridLayout.addWidget(self.graphicsView, 0, 0, 5, 2)
 
         # define all the buttons
         self.Erode = QtGui.QPushButton("Erode")
@@ -62,20 +62,17 @@ class morphViewer(QtGui.QWidget):
         self.Dilate = QtGui.QPushButton("Dilate")
         self.gridLayout.addWidget(self.Dilate, 1, 2, 1, 1)
 
-        self.Cluster = QtGui.QPushButton("Cluster")
-        self.gridLayout.addWidget(self.Cluster, 2, 2, 1, 1)
-
         self.Cycle = QtGui.QPushButton("Cycle")
-        self.gridLayout.addWidget(self.Cycle, 5, 0, 1, 1)
+        self.gridLayout.addWidget(self.Cycle, 6, 0, 1, 1)
 
         self.Rotate = QtGui.QPushButton("Rotate")
-        self.gridLayout.addWidget(self.Rotate, 5, 1, 1, 1)
+        self.gridLayout.addWidget(self.Rotate, 6, 1, 1, 1)
 
         self.Reset = QtGui.QPushButton("Reset")
-        self.gridLayout.addWidget(self.Reset, 4, 2, 1, 1)
+        self.gridLayout.addWidget(self.Reset, 5, 2, 1, 1)
 
         self.Save = QtGui.QPushButton("Save")
-        self.gridLayout.addWidget(self.Save, 5, 2, 1, 1)
+        self.gridLayout.addWidget(self.Save, 6, 2, 1, 1)
 
         # define a slider
         self.horizontalSlider = QtGui.QSlider(self)
@@ -87,7 +84,23 @@ class morphViewer(QtGui.QWidget):
         self.horizontalSlider.setValue(self.val)
         self.horizontalSlider.setTickPosition(QtGui.QSlider.TicksBelow)
         self.horizontalSlider.setTickInterval(5)
-        self.gridLayout.addWidget(self.horizontalSlider, 4, 0, 1, 2)
+        self.gridLayout.addWidget(self.horizontalSlider, 5, 0, 1, 2)
+
+        # define a horizontal layout
+        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum,
+                                       QtGui.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem, 3, 2, 1, 1)
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.gridLayout.addLayout(self.horizontalLayout, 2, 2, 1, 1)
+        
+        self.c_thresh = QtGui.QSpinBox(self)
+        self.horizontalLayout.addWidget(self.c_thresh)
+        
+        self.c_size = QtGui.QSpinBox(self)
+        self.horizontalLayout.addWidget(self.c_size)
+        
+        self.Cluster = QtGui.QPushButton("Cluster")
+        self.horizontalLayout.addWidget(self.Cluster)
 
         # make the slider reactive to changes
         self.horizontalSlider.sliderMoved.connect(self.sliderMoved)
