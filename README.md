@@ -16,9 +16,9 @@ Morphological operations such as erosion and dilation are visualized in real-tim
 | [NumPy](http://www.numpy.org/)            | 1.14.1         |
 | [Scipy](https://www.scipy.org/)           | 1.0.0          |
 | [NiBabel](http://nipy.org/nibabel/)       | 2.2.1          |
-| [Pyqtgraph](http://www.pyqtgraph.org/)    | 0.10.0         |
 | [scikit-image](http://scikit-image.org)   | 0.13.1         |
-| [pyqt](https://en.wikipedia.org/wiki/PyQt)| 4.11.4         |
+| [PyQt](https://en.wikipedia.org/wiki/PyQt)| 4.11.4         |
+| [PyQtGraph](http://www.pyqtgraph.org/)    | 0.10.0         |
 
 ## Installation & Quick Start
 
