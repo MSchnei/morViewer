@@ -128,6 +128,7 @@ class morphViewer(QtGui.QWidget):
         self.Save.clicked.connect(self.updateSave)
 
     def sliderMoved(self, val):
+        """Defines actions when slider is moved."""
         self.val = val
         try:
             self.image.setImage(self.data[..., self.val])
@@ -135,6 +136,7 @@ class morphViewer(QtGui.QWidget):
             print("Error: No image at index", self.val)
 
     def updateEro(self):
+        """Defines actions when Erode button is pressed."""
         # perform erode
         self.data = morphology.binary_erosion(self.data, iterations=1)
         # convert to original data type
@@ -143,6 +145,7 @@ class morphViewer(QtGui.QWidget):
         self.image.setImage(self.data[..., self.val])
 
     def updateDil(self):
+        """Defines actions when Dilate button is pressed."""
         # perform dilate
         self.data = morphology.binary_dilation(self.data, iterations=1)
         # convert to original data type
@@ -151,6 +154,7 @@ class morphViewer(QtGui.QWidget):
         self.image.setImage(self.data[..., self.val])
 
     def updateSave(self):
+        """Defines actions when Save button is pressed."""
         # put the permuted indices back to their original format
         cycBackPerm = (self.cycleCount, (self.cycleCount+1) % 3,
                        (self.cycleCount+2) % 3)
@@ -171,6 +175,7 @@ class morphViewer(QtGui.QWidget):
               self.basename + self.flexfilename)
 
     def updateCluster(self):
+        """Defines actions when Cluster button is pressed."""
         # perform cluster thresholding
         self.data = label(self.data, connectivity=self.cnntvty_val)
         labels, counts = np.unique(self.data, return_counts=True)
@@ -190,12 +195,12 @@ class morphViewer(QtGui.QWidget):
         print('Cluster thresholding done.')
 
     def updateReset(self):
+        """Defines actions when Reset button is pressed."""
         # reset layout to initial state
         print("Not implemented")
 
     def updateCycle(self):
-        # cycle through different image views
-        """Cycle through views."""
+        """Cycle through different image views."""
         # take count of the cycles
         self.cycleCount = (self.cycleCount + 1) % 3
         # transpose data
@@ -207,15 +212,14 @@ class morphViewer(QtGui.QWidget):
         self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
 
     def updateRotate(self):
+        """Defines actions when Rotate button is pressed."""
         # rotate the image view
         print("Not implemented")
 
     def updateCnntvty(self):
-        # update connectivity value
+        """Defines actions when cnntvty scroll bar is changed."""
         self.cnntvty_val = self.cnntvty.value()
-        print("Connectivity set to " + str(self.cnntvty_val))
 
     def updateCsize(self):
-        # update cluster size value
+        """Defines actions when cluster size scroll bar is changed."""
         self.c_size_val = self.c_size.value()
-        print("Cluster size set to " + str(self.c_size_val))        
