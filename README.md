@@ -19,29 +19,24 @@ such as erosion and dilation using the excellent pyqt graph interface.
 
 ## Installation & Quick Start
 
-### create virtual environment (optional)
-`conda create --name envMorphViewer python=3.5`
-
-`source activate envMorphViewer`
-
-`conda install pip`
-
-### install basics
-`pip install numpy scipy nibabel`
-
-### install pyqtgraph
-`conda install -c anaconda pyqtgraph=0.10.0`
-
-### install scikit-image
-`conda install -c anaconda scikit-image`
-
-### install PyQt4
-`conda install pyqt=4`
-
-### install pyOpenGL (optional)
-`pip install PyOpenGL PyOpenGL_accelerate`
-
-### clone repository
-`cd home/user/git/`
-
-`git clone https://github.com/MSchnei/morphViewer.git`
+- _(Optional but recommended)_ Create a virtual environment:
+```
+conda create --name envMorphViewer python=3.5
+source activate envMorphViewer
+conda install pip
+```
+- Install dependencies:
+```
+pip install numpy scipy nibabel
+conda install -c anaconda pyqtgraph=0.10.0
+conda install -c anaconda scikit-image
+conda install pyqt=4
+```
+- _(Optional)_ Install pyOpenGL:
+```
+pip install PyOpenGL PyOpenGL_accelerate
+```
+- Clone MorpView repository:
+```
+git clone https://github.com/MSchnei/morphViewer.git
+```
