@@ -1,6 +1,8 @@
 <img src="morphViewer.png" width=300 align="right" />
 
-# Morphology Viewer [work in progress...]
+# Morphology Viewer
+
+__[work in progress...]__
 
 The aim of this project is to provide a user friendly interface to visualize basic morphology operations on binary volumetric images.
 
