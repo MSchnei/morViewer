@@ -1,9 +1,9 @@
-# Morphology Viewer
+<img src="morphViewer.png" width=420 align="right" />
 
-[WIP] The aim is to provide an easy way of visualizing basic morphology operations
+# Morphology Viewer [work in progress...]
+
+The aim is to provide an easy way of visualizing basic morphology operations
 such as erosion and dilation using the excellent pyqt graph interface.
-
-<img src="morphViewer.png" width=420 align="center" />
 
 ## Core dependencies
 [**Python 3.5**](https://www.python.org/download/releases/3.5/)
