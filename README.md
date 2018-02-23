@@ -9,7 +9,7 @@ The aim of this project is to provide a user friendly interface to visualize bas
 Morphological operations such as erosion and dilation are visualized in real-time by making use of the lightning fast [PyQtGraph](http://www.pyqtgraph.org/) package. The processed images can be exported as Nifti files.
 
 ## Core dependencies
-[**Python 3.5**](https://www.python.org/download/releases/3.5/)
+**[Python 3.6](https://www.python.org/downloads/release/python-363/)** or **[Python 2.7](https://www.python.org/download/releases/2.7/)** (compatible with both).
 
 | Package                                   | Tested version |
 |-------------------------------------------|----------------|
