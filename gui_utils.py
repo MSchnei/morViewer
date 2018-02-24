@@ -21,7 +21,9 @@ class morphViewer(QtGui.QWidget):
         super(morphViewer, self).__init__(parent)
 
         # define the data
-        self.data = inIma
+        self.data = inIma 
+        # make a copy for reset
+        self.orig_data = np.copy(self.data)
         # define data type
         self.datatype = self.data.dtype
         # set initial window size
@@ -194,10 +196,30 @@ class morphViewer(QtGui.QWidget):
         # print finish message
         print('Cluster thresholding done.')
 
-    def updateReset(self):
+    def updateReset(self, inIma):
         """Defines actions when Reset button is pressed."""
-        # reset layout to initial state
-        print("Not implemented")
+        # reset the data
+        self.data = self.orig_data
+        # reset data type
+        self.datatype = self.data.dtype
+        # reset initial window size
+        self.resize(800, 800)
+        # reset initial slider value
+        self.val = int((self.data.shape[-1]-1)/2.)
+        self.horizontalSlider.setValue(self.val)
+        # reset initial connectivity value
+        self.cnntvty_val = 2
+        self.cnntvty.setValue(self.cnntvty_val)
+        # reset cluster size value
+        self.c_size_val = 26
+        self.c_size.setValue(self.c_size_val)
+        # reset initial cycle view value
+        self.cycleCount = 0
+        # reset nr of exports
+        self.nrExports = 0
+        # reset the image
+        self.image.setImage(self.data[..., self.val])
+
 
     def updateCycle(self):
         """Cycle through different image views."""
