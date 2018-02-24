@@ -23,24 +23,21 @@
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="4" column="0" colspan="2">
-     <widget class="QSlider" name="horizontalSlider">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="2">
-     <widget class="QPushButton" name="Dilate">
+    <item row="6" column="2">
+     <widget class="QPushButton" name="Save">
       <property name="text">
-       <string>Dilate</string>
+       <string>Save</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="0" rowspan="4" colspan="2">
-     <widget class="GraphicsView" name="graphicsView"/>
+    <item row="6" column="0">
+     <widget class="QPushButton" name="Cycle">
+      <property name="text">
+       <string>Cycle</string>
+      </property>
+     </widget>
     </item>
-    <item row="5" column="1">
+    <item row="6" column="1">
      <widget class="QPushButton" name="Rotate">
       <property name="text">
        <string>Rotate</string>
@@ -55,32 +52,58 @@
      </widget>
     </item>
     <item row="5" column="2">
-     <widget class="QPushButton" name="Save">
-      <property name="text">
-       <string>Save</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="2">
      <widget class="QPushButton" name="Reset">
       <property name="text">
        <string>Reset</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="0">
-     <widget class="QPushButton" name="Cycle">
+    <item row="0" column="0" rowspan="5" colspan="2">
+     <widget class="GraphicsView" name="graphicsView"/>
+    </item>
+    <item row="1" column="2">
+     <widget class="QPushButton" name="Dilate">
       <property name="text">
-       <string>Cycle</string>
+       <string>Dilate</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="2">
-     <widget class="QPushButton" name="Cluster">
-      <property name="text">
-       <string>Cluster</string>
+    <item row="5" column="0" colspan="2">
+     <widget class="QSlider" name="horizontalSlider">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
      </widget>
+    </item>
+    <item row="3" column="2">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QSpinBox" name="c_thresh"/>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="c_size"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Cluster">
+        <property name="text">
+         <string>Cluster</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
