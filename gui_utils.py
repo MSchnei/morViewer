@@ -86,8 +86,8 @@ class morphViewer(QtGui.QWidget):
         self.setObjectName("horizontalSlider")
         # set minimum, maximum and starting value of slider
         self.horizontalSlider.setMinimum(0)
-        self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
         self.horizontalSlider.setValue(self.val)
+        self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
         self.horizontalSlider.setTickPosition(QtGui.QSlider.TicksBelow)
         self.horizontalSlider.setTickInterval(5)
         self.gridLayout.addWidget(self.horizontalSlider, 5, 0, 1, 2)
@@ -206,13 +206,19 @@ class morphViewer(QtGui.QWidget):
         self.resize(800, 800)
         # reset initial slider value
         self.val = int((self.data.shape[-1]-1)/2.)
+        self.horizontalSlider.setMinimum(0)
         self.horizontalSlider.setValue(self.val)
+        self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
         # reset initial connectivity value
         self.cnntvty_val = 2
+        self.cnntvty.setMinimum(1)
         self.cnntvty.setValue(self.cnntvty_val)
+        self.cnntvty.setMaximum(len(self.data.shape))
         # reset cluster size value
         self.c_size_val = 26
+        self.c_size.setMinimum(1)
         self.c_size.setValue(self.c_size_val)
+        self.c_size.setMaximum(100)
         # reset initial cycle view value
         self.cycleCount = 0
         # reset nr of exports
