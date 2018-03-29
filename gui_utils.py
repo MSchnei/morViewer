@@ -36,8 +36,8 @@ class morphViewer(QtGui.QWidget):
         self.c_size_val = 26
         # set initial cycle view value
         self.cycleCount = 0
-        # set rotation history
-        self.cycRotHistory = [[0, 0], [0, 0], [0, 0]]
+        # set cycle rotation history
+        self.rotCount = np.array([0, 0, 0])
         # set affine
         if affine is None:
             self.affine = np.identity(4)
@@ -131,20 +131,23 @@ class morphViewer(QtGui.QWidget):
         self.Reset.clicked.connect(self.updateReset)
         self.Save.clicked.connect(self.updateSave)
 
-    def updatePanels(self, update_ima=True, update_rotation=False):
-        """Update image."""
-        if update_rotation:
-            self.checkRotation()
+    def updatePanels(self, update_ima=True, update_slider=False):
+        """Update viewer panels."""
+        if update_slider:
+            # updates slider
+            self.val = int(self.val/self.data.shape[0] * self.data.shape[-1])-1
+            self.horizontalSlider.setMinimum(0)
+            self.horizontalSlider.setValue(self.val)
+            self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
         if update_ima:
+            # update image data
             self.image.setImage(self.data[..., self.val])
 
     def sliderMoved(self, val):
         """Defines actions when slider is moved."""
         self.val = val
-        print("val:")
-        print(self.val)
         try:
-            self.updatePanels(update_ima=True, update_rotation=False)
+            self.updatePanels(update_ima=True, update_slider=False)
         except IndexError:
             print("Error: No image at index", self.val)
 
@@ -155,7 +158,7 @@ class morphViewer(QtGui.QWidget):
         # convert to original data type
         self.data = self.data.astype(self.datatype)
         # update image of nii data
-        self.updatePanels(update_ima=True, update_rotation=False)
+        self.updatePanels(update_ima=True, update_slider=False)
 
     def updateDil(self):
         """Defines actions when Dilate button is pressed."""
@@ -164,28 +167,7 @@ class morphViewer(QtGui.QWidget):
         # convert to original data type
         self.data = self.data.astype(self.datatype)
         # update image of nii data
-        self.updatePanels(update_ima=True, update_rotation=False)
-
-    def updateSave(self):
-        """Defines actions when Save button is pressed."""
-        # put the permuted indices back to their original format
-        cycBackPerm = (self.cycleCount, (self.cycleCount+1) % 3,
-                       (self.cycleCount+2) % 3)
-        # create copy for export, which can be transposed back
-        outData = np.copy(self.data)
-        outData = np.transpose(outData, cycBackPerm)
-        # prepare saving as nifti
-        out = Nifti1Image(outData, header=self.header, affine=self.affine)
-        # get new flex file name and check for overwriting
-        self.nrExports = 0
-        self.flexfilename = '_morph_' + str(self.nrExports) + '.nii.gz'
-        while os.path.isfile(self.basename + self.flexfilename):
-            self.nrExports += 1
-            self.flexfilename = '_labels_' + str(self.nrExports) + '.nii.gz'
-        save(out, self.basename + self.flexfilename)
-        # save as nii
-        print("successfully exported morph image as: \n" +
-              self.basename + self.flexfilename)
+        self.updatePanels(update_ima=True, update_slider=False)
 
     def updateCluster(self):
         """Defines actions when Cluster button is pressed."""
@@ -203,7 +185,7 @@ class morphViewer(QtGui.QWidget):
         # return with old data type
         self.data = self.data.astype(self.data.dtype)
         # update image of nii data
-        self.updatePanels(update_ima=True, update_rotation=False)
+        self.updatePanels(update_ima=True, update_slider=False)
         # print finish message
         print('Cluster thresholding done.')
 
@@ -215,11 +197,6 @@ class morphViewer(QtGui.QWidget):
         self.datatype = self.data.dtype
         # reset initial window size
         self.resize(800, 800)
-        # reset initial slider value
-        self.val = int((self.data.shape[-1]-1)/2.)
-        self.horizontalSlider.setMinimum(0)
-        self.horizontalSlider.setValue(self.val)
-        self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
         # reset initial connectivity value
         self.cnntvty_val = 2
         self.cnntvty.setMinimum(1)
@@ -232,10 +209,12 @@ class morphViewer(QtGui.QWidget):
         self.c_size.setMaximum(100)
         # reset initial cycle view value
         self.cycleCount = 0
+        # reset cycle rotation history
+        self.rotCount = np.array([0, 0, 0])
         # reset nr of exports
         self.nrExports = 0
         # reset the image
-        self.updatePanels(update_ima=True, update_rotation=True)
+        self.updatePanels(update_ima=True, update_slider=True)
 
     def updateCycle(self):
         """Cycle through different image views."""
@@ -244,31 +223,47 @@ class morphViewer(QtGui.QWidget):
         # transpose data
         self.data = np.transpose(self.data, (2, 0, 1))
         # update image of nii data
-        self.updatePanels(update_ima=True, update_rotation=True)
-        # updates slider
-        self.horizontalSlider.setMinimum(0)
-        self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
+        self.updatePanels(update_ima=True, update_slider=True)
 
-    def rotateIma90(self, axes=(0, 1)):
+    def rotateIma90(self, k=1, axes=(0, 1)):
         """Rotate data by 90 degrees."""
-        self.data = np.rot90(self.data, axes=axes)
+        self.data = np.rot90(self.data, k=k, axes=axes)
 
     def updateRotate(self):
         """Defines actions when Rotate button is pressed."""
-        self.cycRotHistory[self.cycleCount][1] += 1
-        self.cycRotHistory[self.cycleCount][1] %= 4
+        self.rotCount[self.cycleCount] += 1
+        self.rotCount[self.cycleCount] %= 4
         self.rotateIma90()
-        self.updatePanels(update_ima=True, update_rotation=False)
+        self.updatePanels(update_ima=True, update_slider=False)
 
-    def checkRotation(self):
-        """Check rotation update if changed."""
-        cyc_rot = self.cycRotHistory[self.cycleCount][1]
-        if cyc_rot == 1:  # 90
-            self.rotateIma90(axes=(0, 1))
-        elif cyc_rot == 2:  # 180
-            self.data = self.data[::-1, ::-1, :]
-        elif cyc_rot == 3:  # 270
-            self.rotateIma90(axes=(1, 0))
+    def undoCycle(self, outData):
+        """Undo cycling."""
+        #calcualate indices necessary to undo view cycling
+        self.cycBackPerm = (self.cycleCount, (self.cycleCount+1) % 3,
+                            (self.cycleCount+2) % 3)
+        print("shape before cycle corr:")
+        print(outData.shape)
+        outData = np.transpose(outData, self.cycBackPerm)
+        print("shape after cycle corr:")
+        print(outData.shape)
+        return outData
+
+    def undoRot(self, outData):
+        """Undo rotations."""
+        #calcualate indices necessary to undo rotations
+        self.rotBack = np.array([4, 4, 4]) - self.rotCount
+        print(self.rotCount)
+        print(self.rotBack)
+        # undo rotations
+        print("shape before rot corr:")
+        print(outData.shape)
+        outData = np.rot90(outData, k=self.rotBack[0], axes=(0, 1))
+        outData = np.rot90(outData, k=self.rotBack[1], axes=(2, 0))
+        outData = np.rot90(outData, k=self.rotBack[2], axes=(1, 2))
+        # undo rotations
+        print("shape before rot corr:")
+        print(outData.shape)
+        return outData
 
     def updateCnntvty(self):
         """Defines actions when cnntvty scroll bar is changed."""
@@ -277,3 +272,24 @@ class morphViewer(QtGui.QWidget):
     def updateCsize(self):
         """Defines actions when cluster size scroll bar is changed."""
         self.c_size_val = self.c_size.value()
+
+    def updateSave(self):
+        """Defines actions when Save button is pressed."""
+        # create copy for export, which can be transposed back
+        outData = np.copy(self.data)
+        # undo permutations for cycling
+        outData = self.undoCycle(outData)
+        # undo permutations for rotation
+        outData = self.undoRot(outData)
+        # prepare saving as nifti
+        out = Nifti1Image(outData, header=self.header, affine=self.affine)
+        # get new flex file name and check for overwriting
+        self.nrExports = 0
+        self.flexfilename = '_morph_' + str(self.nrExports) + '.nii.gz'
+        while os.path.isfile(self.basename + self.flexfilename):
+            self.nrExports += 1
+            self.flexfilename = '_morph_' + str(self.nrExports) + '.nii.gz'
+        save(out, self.basename + self.flexfilename)
+        # save as nii
+        print("successfully exported morph image as: \n" +
+              self.basename + self.flexfilename)
