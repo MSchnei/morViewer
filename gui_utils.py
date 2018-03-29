@@ -135,10 +135,17 @@ class morphViewer(QtGui.QWidget):
         """Update viewer panels."""
         if update_slider:
             # updates slider
-            self.val = int(self.val/self.data.shape[0] * self.data.shape[-1])-1
             self.horizontalSlider.setMinimum(0)
-            self.horizontalSlider.setValue(self.val)
             self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
+
+            print("val before:")
+            print(self.val)
+            print("proportion:")
+            print(self.val/self.data.shape[0])
+            self.val = int((self.val/self.data.shape[0]) * self.data.shape[-1])
+            print("val after:")
+            print(self.val)
+            self.horizontalSlider.setValue(self.val)
         if update_ima:
             # update image data
             self.image.setImage(self.data[..., self.val])
