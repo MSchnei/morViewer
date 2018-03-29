@@ -25,20 +25,18 @@ basename = nii2.get_filename().split(os.extsep, 1)[0]
 dirname = os.path.dirname(nii2.get_filename())
 ima2 = nii2.get_data().astype('int8')
 
-
 def rtnDiffVox(ima1, ima2, lstInd):
     """Calculate indices of voxels that were added or subtracted."""
-    # get bool for values that are now included
-    now_incl = np.logical_and(ima1==0, ima2==1).astype('int8')
+    # get bool for values that are now included    
+    now_incl = np.logical_and(ima1==0, ima2==1)
     # get bool for values that are now excluded
-    now_excl = np.logical_and(ima1==1, ima2==0).astype('int8')
+    now_excl = np.logical_and(ima1==1, ima2==0)
     # get non-zero indices for now included voxels
-    ind_now_incl = np.flatnonzero(now_incl)
+    %timeit ind_now_incl = np.flatnonzero(now_incl)
     # get non-zero indices for now excluded voxels    
-    ind_now_excl = np.flatnonzero(now_excl)
-    
+    %timeit ind_now_excl = np.flatnonzero(now_excl)
+
     lstInd[0].append(ind_now_incl)
     lstInd[1].append(ind_now_excl)
     
     return lstInd    
-    
