@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import pyqtgraph as pg
 from nibabel import load
 from PyQt4 import QtGui
 from gui_utils import morphViewer
@@ -22,5 +23,10 @@ data = nii.get_data().astype('int8')
 app = QtGui.QApplication([])
 mV = morphViewer(data, basename=basename, affine=nii.affine, header=nii.header)
 mV.show()
+
+proxy = pg.SignalProxy(mV.viewbox.scene().sigMouseClicked, rateLimit=60,
+                       slot=mV.mouseMoved)
+#mV.viewbox.scene().sigMouseClicked.connect(mV.mouseMoved)
+
 mV.raise_()
 app.exec_()

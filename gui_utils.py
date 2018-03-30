@@ -58,7 +58,7 @@ class morphViewer(QtGui.QWidget):
         # define a graphics window, to which a viewbox and image are added
         self.graphicsView = pg.GraphicsWindow()
         self.viewbox = self.graphicsView.addViewBox(lockAspect=1)  # aspect rat
-        self.image = pg.ImageItem()
+        self.image = pg.ImageItem(border=(100,100,0))
         self.image.setImage(self.data[..., self.val])
         self.viewbox.addItem(self.image)
         self.gridLayout.addWidget(self.graphicsView, 0, 0, 5, 2)
@@ -130,6 +130,19 @@ class morphViewer(QtGui.QWidget):
         self.Rotate.clicked.connect(self.updateRotate)
         self.Reset.clicked.connect(self.updateReset)
         self.Save.clicked.connect(self.updateSave)
+
+    def mouseMoved(self, evt):
+        """Defines actions when mouse button is clicked."""
+        pos = evt[0].pos()
+        # pos = evt.pos()
+        # pos = evt[0].scenePos()
+        # pos = evt[0].screenPos()
+        if self.viewbox.sceneBoundingRect().contains(pos):
+            mousePoint = self.viewbox.mapSceneToView(pos)
+            print("mouse:")
+            print(int(mousePoint.x()))
+            print(int(mousePoint.y()-1))
+            print(self.val)
 
     def updatePanels(self, update_ima=True, update_slider=False):
         """Update viewer panels."""
