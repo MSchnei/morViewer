@@ -160,10 +160,12 @@ class morphViewer(QtGui.QWidget):
                 # add pixel
                 self.data[int(mousePoint.x()), int(mousePoint.y()),
                           self.val] = 1
+                self.viewbox.setOpacity(0.9)
             elif evt.button() == 2:
                 # delete pixel
                 self.data[int(mousePoint.x()), int(mousePoint.y()),
                           self.val] = 0
+                self.viewbox.setOpacity(0.1)
             self.updatePanels(update_ima=True, update_slider=False)
 
     def sliderMoved(self, val):
@@ -218,8 +220,6 @@ class morphViewer(QtGui.QWidget):
         self.data = self.orig_data
         # reset data type
         self.datatype = self.data.dtype
-        # reset initial window size
-        self.resize(800, 800)
         # reset initial connectivity value
         self.cnntvty_val = 2
         self.cnntvty.setMinimum(1)
