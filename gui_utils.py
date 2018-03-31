@@ -153,11 +153,11 @@ class morphViewer(QtGui.QWidget):
 
         # define labels and buttons for region growing
         self.Seed = QtGui.QLabel("Seed:")
-        self.Seed.setAlignment(QtCore.Qt.AlignCenter)
+#        self.Seed.setAlignment(QtCore.Qt.AlignCenter)
         self.horizontalLayout_grow.addWidget(self.Seed)
     
         self.Coordns = QtGui.QLabel("X, Y, Z")
-        self.Coordns.setAlignment(QtCore.Qt.AlignCenter)
+#        self.Coordns.setAlignment(QtCore.Qt.AlignCenter)
         self.horizontalLayout_grow.addWidget(self.Coordns)
 
         self.Grow = QtGui.QPushButton("Grow")
@@ -228,20 +228,29 @@ class morphViewer(QtGui.QWidget):
         print(evt.button())
         if self.viewbox.sceneBoundingRect().contains(pos):
             mousePoint = self.viewbox.mapSceneToView(pos)
-            print("mouse:")
-            print(int(mousePoint.x()))
-            print(int(mousePoint.y()))
-            print(self.val)
-            if evt.button() == 1:
-                # add pixel
-                self.data[int(mousePoint.x()), int(mousePoint.y()),
-                          self.val] = 1
-                self.viewbox.setOpacity(0.9)
-            elif evt.button() == 2:
-                # delete pixel
-                self.data[int(mousePoint.x()), int(mousePoint.y()),
-                          self.val] = 0
-                self.viewbox.setOpacity(0.1)
+            if self.checkb_val:
+            # manual segmentation mode
+                if evt.button() == 1:
+                    # add pixel
+                    self.data[int(mousePoint.x()), int(mousePoint.y()),
+                              self.val] = 1
+                    self.viewbox.setOpacity(0.9)
+                elif evt.button() == 2:
+                    # delete pixel
+                    self.data[int(mousePoint.x()), int(mousePoint.y()),
+                              self.val] = 0
+                    self.viewbox.setOpacity(0.1)
+            else:
+            # browser mode
+                # update browser values
+                self.browser_ind[0] = int(mousePoint.x())
+                self.browser_ind[1] = int(mousePoint.y())
+                self.browser_ind[2] = self.val
+                # update spin
+                self.cursorBrowserX.setValue(self.browser_ind[0])
+                self.cursorBrowserY.setValue(self.browser_ind[1])
+                self.cursorBrowserZ.setValue(self.browser_ind[2])
+            # update the panels
             self.updatePanels(update_ima=True, update_slider=False)
 
     def sliderMoved(self, val):
@@ -305,7 +314,9 @@ class morphViewer(QtGui.QWidget):
     def updateOpen(self):
         """Defines actions when Open button is pressed."""
 #        lineEdit.setText(QFileDialog.getOpenFileName())
-        print("Not implemented yet")
+        newfile = QtGui.QFileDialog.getOpenFileName()
+        self.File_names.addItem(newfile)
+#        print("Not implemented yet")
 
     def updateReset(self, inIma):
         """Defines actions when Reset button is pressed."""
