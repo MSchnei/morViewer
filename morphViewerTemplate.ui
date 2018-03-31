@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>918</width>
+    <width>920</width>
     <height>791</height>
    </rect>
   </property>
@@ -23,73 +23,26 @@
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="6" column="2">
-     <widget class="QPushButton" name="Save">
-      <property name="text">
-       <string>Save</string>
+    <item row="14" column="2">
+     <widget class="QCheckBox" name="Manual">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
-     </widget>
-    </item>
-    <item row="6" column="0">
-     <widget class="QPushButton" name="Cycle">
-      <property name="text">
-       <string>Cycle</string>
+      <property name="font">
+       <font>
+        <italic>true</italic>
+       </font>
       </property>
-     </widget>
-    </item>
-    <item row="6" column="1">
-     <widget class="QPushButton" name="Rotate">
       <property name="text">
-       <string>Rotate</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QPushButton" name="Erode">
-      <property name="text">
-       <string>Erode</string>
+       <string>Manual segmentation</string>
       </property>
      </widget>
     </item>
     <item row="5" column="2">
-     <widget class="QPushButton" name="Reset">
-      <property name="text">
-       <string>Reset</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0" rowspan="5" colspan="2">
-     <widget class="GraphicsView" name="graphicsView"/>
-    </item>
-    <item row="1" column="2">
-     <widget class="QPushButton" name="Dilate">
-      <property name="text">
-       <string>Dilate</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0" colspan="2">
-     <widget class="QSlider" name="horizontalSlider">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="2">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="2" column="2">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout_cluster">
       <item>
        <widget class="QSpinBox" name="c_thresh"/>
       </item>
@@ -105,8 +58,174 @@
       </item>
      </layout>
     </item>
+    <item row="16" column="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_browser">
+      <item>
+       <widget class="QSpinBox" name="cursorBrowserX"/>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="cursorBrowserY"/>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="cursorBrowserZ"/>
+      </item>
+     </layout>
+    </item>
+    <item row="16" column="0">
+     <widget class="QPushButton" name="Cycle">
+      <property name="text">
+       <string>Cycle</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="2">
+     <widget class="QPushButton" name="Black_tophat">
+      <property name="text">
+       <string>Black tophat</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="1">
+     <widget class="QPushButton" name="Rotate">
+      <property name="text">
+       <string>Rotate</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="Erode">
+      <property name="text">
+       <string>Erode</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" rowspan="14" colspan="2">
+     <widget class="GraphicsView" name="graphicsView"/>
+    </item>
+    <item row="1" column="2">
+     <widget class="QPushButton" name="Dilate">
+      <property name="text">
+       <string>Dilate</string>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="0" colspan="2">
+     <widget class="QSlider" name="horizontalSlider">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QPushButton" name="White_tophat">
+      <property name="text">
+       <string>White tophat</string>
+      </property>
+     </widget>
+    </item>
+    <item row="19" column="2">
+     <widget class="QPushButton" name="Save">
+      <property name="text">
+       <string>Save</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_cluster_2">
+      <item>
+       <widget class="QLabel" name="Seed">
+        <property name="text">
+         <string>Seed:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="Coordns">
+        <property name="text">
+         <string>X,Y,Z</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Grow">
+        <property name="text">
+         <string>Grow</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="6" column="2" rowspan="8">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="20" column="0" colspan="3">
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>24</number>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="2">
+     <widget class="QPushButton" name="Open">
+      <property name="text">
+       <string>Open</string>
+      </property>
+     </widget>
+    </item>
+    <item row="17" column="0" rowspan="3" colspan="2">
+     <widget class="QListWidget" name="File_names"/>
+    </item>
+    <item row="17" column="2">
+     <widget class="QPushButton" name="Reset">
+      <property name="text">
+       <string>Reset</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
+  <widget class="QScrollArea" name="scrollArea">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>780</y>
+     <width>120</width>
+     <height>80</height>
+    </rect>
+   </property>
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <widget class="QWidget" name="scrollAreaWidgetContents_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>118</width>
+      <height>78</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <zorder>layoutWidget</zorder>
+  <zorder>Cycle_2</zorder>
+  <zorder>scrollArea</zorder>
  </widget>
  <customwidgets>
   <customwidget>
