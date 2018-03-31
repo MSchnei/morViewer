@@ -131,7 +131,7 @@
      </widget>
     </item>
     <item row="4" column="2">
-     <layout class="QHBoxLayout" name="horizontalLayout_cluster_2">
+     <layout class="QHBoxLayout" name="horizontalLayout_grow">
       <item>
        <widget class="QLabel" name="Seed">
         <property name="text">
@@ -174,13 +174,6 @@
       </property>
      </spacer>
     </item>
-    <item row="20" column="0" colspan="3">
-     <widget class="QProgressBar" name="progressBar">
-      <property name="value">
-       <number>24</number>
-      </property>
-     </widget>
-    </item>
     <item row="18" column="2">
      <widget class="QPushButton" name="Open">
       <property name="text">
@@ -200,32 +193,8 @@
     </item>
    </layout>
   </widget>
-  <widget class="QScrollArea" name="scrollArea">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>780</y>
-     <width>120</width>
-     <height>80</height>
-    </rect>
-   </property>
-   <property name="widgetResizable">
-    <bool>true</bool>
-   </property>
-   <widget class="QWidget" name="scrollAreaWidgetContents_2">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>118</width>
-      <height>78</height>
-     </rect>
-    </property>
-   </widget>
-  </widget>
   <zorder>layoutWidget</zorder>
   <zorder>Cycle_2</zorder>
-  <zorder>scrollArea</zorder>
  </widget>
  <customwidgets>
   <customwidget>
