@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>920</width>
+    <width>923</width>
     <height>791</height>
    </rect>
   </property>
@@ -134,6 +134,12 @@
      <layout class="QHBoxLayout" name="horizontalLayout_grow">
       <item>
        <widget class="QLabel" name="Seed">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Seed:</string>
         </property>
@@ -144,6 +150,12 @@
       </item>
       <item>
        <widget class="QLabel" name="Coordns">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>X,Y,Z</string>
         </property>
