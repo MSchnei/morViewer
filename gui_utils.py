@@ -74,7 +74,7 @@ class morphViewer(QtGui.QWidget):
         # define a graphics window, to which a viewbox and image are added
         self.graphicsView = pg.GraphicsWindow()
         self.viewbox = self.graphicsView.addViewBox(lockAspect=1)  # aspect rat
-        self.image = pg.ImageItem(border=(205,92,92))
+        self.image = pg.ImageItem(border=(205, 92, 92))
         self.image.setImage(self.data[..., self.val])
         self.viewbox.addItem(self.image)
         self.viewbox.setMenuEnabled(False)
@@ -110,12 +110,6 @@ class morphViewer(QtGui.QWidget):
 
         # define check box fo manual segmentation
         self.Manual = QtGui.QCheckBox("Manual segmentation")
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum,
-                                       QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.Manual.sizePolicy().hasHeightForWidth())
-        self.Manual.setSizePolicy(sizePolicy)
         self.gridLayout.addWidget(self.Manual, 14, 2, 1, 1)
 
         # define a horizontal slider
@@ -138,7 +132,7 @@ class morphViewer(QtGui.QWidget):
 
         # define a vertical spacer
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum,
-                                       QtGui.QSizePolicy.Expanding)
+                                       QtGui.QSizePolicy.Fixed)
         self.gridLayout.addItem(spacerItem, 6, 2, 8, 1)
 
         # define spin boxes and push button for cluster
@@ -159,22 +153,10 @@ class morphViewer(QtGui.QWidget):
 
         # define labels and buttons for region growing
         self.Seed = QtGui.QLabel("Seed:")
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum,
-                                       QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.Seed.sizePolicy().hasHeightForWidth())
-        self.Seed.setSizePolicy(sizePolicy)
         self.Seed.setAlignment(QtCore.Qt.AlignCenter)
         self.horizontalLayout_grow.addWidget(self.Seed)
-    
+
         self.Coordns = QtGui.QLabel("X, Y, Z")
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum,
-                                       QtGui.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.Coordns.sizePolicy().hasHeightForWidth())
-        self.Coordns.setSizePolicy(sizePolicy)
         self.Coordns.setAlignment(QtCore.Qt.AlignCenter)
         self.horizontalLayout_grow.addWidget(self.Coordns)
 
@@ -242,8 +224,6 @@ class morphViewer(QtGui.QWidget):
         """Defines actions when mouse button is clicked."""
         evt = evt[0]
         pos = evt.scenePos()
-        print("button:")
-        print(evt.button())
         if self.viewbox.sceneBoundingRect().contains(pos):
             mousePoint = self.viewbox.mapSceneToView(pos)
             if self.checkb_val:
@@ -331,10 +311,8 @@ class morphViewer(QtGui.QWidget):
 
     def updateOpen(self):
         """Defines actions when Open button is pressed."""
-#        lineEdit.setText(QFileDialog.getOpenFileName())
         newfile = QtGui.QFileDialog.getOpenFileName()
         self.File_names.addItem(newfile)
-#        print("Not implemented yet")
 
     def updateReset(self, inIma):
         """Defines actions when Reset button is pressed."""
@@ -392,7 +370,6 @@ class morphViewer(QtGui.QWidget):
     def updateManual(self):
         """Defines actions when Manual check box is changed."""
         self.checkb_val = self.Manual.isChecked()
-        print(self.checkb_val)
 
     def updateCnntvty(self):
         """Defines actions when cnntvty scroll bar is changed."""
