@@ -58,9 +58,10 @@ class morphViewer(QtGui.QWidget):
         # define a graphics window, to which a viewbox and image are added
         self.graphicsView = pg.GraphicsWindow()
         self.viewbox = self.graphicsView.addViewBox(lockAspect=1)  # aspect rat
-        self.image = pg.ImageItem(border=(100,100,0))
+        self.image = pg.ImageItem(border=(205,92,92))
         self.image.setImage(self.data[..., self.val])
         self.viewbox.addItem(self.image)
+        self.viewbox.setMenuEnabled(False)
         self.gridLayout.addWidget(self.graphicsView, 0, 0, 5, 2)
 
         # define all the buttons
@@ -131,19 +132,6 @@ class morphViewer(QtGui.QWidget):
         self.Reset.clicked.connect(self.updateReset)
         self.Save.clicked.connect(self.updateSave)
 
-    def mouseMoved(self, evt):
-        """Defines actions when mouse button is clicked."""
-        pos = evt[0].pos()
-        # pos = evt.pos()
-        # pos = evt[0].scenePos()
-        # pos = evt[0].screenPos()
-        if self.viewbox.sceneBoundingRect().contains(pos):
-            mousePoint = self.viewbox.mapSceneToView(pos)
-            print("mouse:")
-            print(int(mousePoint.x()))
-            print(int(mousePoint.y()-1))
-            print(self.val)
-
     def updatePanels(self, update_ima=True, update_slider=False):
         """Update viewer panels."""
         if update_slider:
@@ -155,6 +143,28 @@ class morphViewer(QtGui.QWidget):
         if update_ima:
             # update image data
             self.image.setImage(self.data[..., self.val])
+
+    def mouseMoved(self, evt):
+        """Defines actions when mouse button is clicked."""
+        evt = evt[0]
+        pos = evt.scenePos()
+        print("button:")
+        print(evt.button())
+        if self.viewbox.sceneBoundingRect().contains(pos):
+            mousePoint = self.viewbox.mapSceneToView(pos)
+            print("mouse:")
+            print(int(mousePoint.x()))
+            print(int(mousePoint.y()))
+            print(self.val)
+            if evt.button() == 1:
+                # add pixel
+                self.data[int(mousePoint.x()), int(mousePoint.y()),
+                          self.val] = 1
+            elif evt.button() == 2:
+                # delete pixel
+                self.data[int(mousePoint.x()), int(mousePoint.y()),
+                          self.val] = 0
+            self.updatePanels(update_ima=True, update_slider=False)
 
     def sliderMoved(self, val):
         """Defines actions when slider is moved."""
