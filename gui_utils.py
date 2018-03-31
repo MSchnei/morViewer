@@ -30,10 +30,14 @@ class morphViewer(QtGui.QWidget):
         self.resize(800, 800)
         # set initial slider value
         self.val = int((self.data.shape[-1]-1)/2.)
+        # set initial checkbpx value
+        self.checkb_val = False
         # set initial connectivity value
         self.cnntvty_val = 2
         # set cluster size value
         self.c_size_val = 26
+        # set intial browser indices
+        self.browser_ind = np.array([0, 0, 0])
         # set initial tranpose counter
         self.trnspCount = np.array([0, 1, 2])
         # set initial flip counter
@@ -55,6 +59,18 @@ class morphViewer(QtGui.QWidget):
         self.gridLayout = QtGui.QGridLayout(self)
         self.gridLayout.setObjectName("gridLayout")
 
+        # define a horizontal layout for cluster
+        self.horizontalLayout_cluster = QtGui.QHBoxLayout()
+        self.gridLayout.addLayout(self.horizontalLayout_cluster, 5, 2, 1, 1)
+
+        # define a horizontal layout for region growing
+        self.horizontalLayout_grow = QtGui.QHBoxLayout()
+        self.gridLayout.addLayout(self.horizontalLayout_grow, 4, 2, 1, 1)
+
+        # define a horizontal layout for browser
+        self.horizontalLayout_browser = QtGui.QHBoxLayout()
+        self.gridLayout.addLayout(self.horizontalLayout_browser, 16, 2, 1, 1)
+
         # define a graphics window, to which a viewbox and image are added
         self.graphicsView = pg.GraphicsWindow()
         self.viewbox = self.graphicsView.addViewBox(lockAspect=1)  # aspect rat
@@ -62,7 +78,7 @@ class morphViewer(QtGui.QWidget):
         self.image.setImage(self.data[..., self.val])
         self.viewbox.addItem(self.image)
         self.viewbox.setMenuEnabled(False)
-        self.gridLayout.addWidget(self.graphicsView, 0, 0, 5, 2)
+        self.gridLayout.addWidget(self.graphicsView, 0, 0, 14, 2)
 
         # define all the buttons
         self.Erode = QtGui.QPushButton("Erode")
@@ -71,64 +87,131 @@ class morphViewer(QtGui.QWidget):
         self.Dilate = QtGui.QPushButton("Dilate")
         self.gridLayout.addWidget(self.Dilate, 1, 2, 1, 1)
 
+        self.Black_tophat = QtGui.QPushButton("Black tophat")
+        self.gridLayout.addWidget(self.Black_tophat, 3, 2, 1, 1)
+        
+        self.White_tophat = QtGui.QPushButton("White tophat")
+        self.gridLayout.addWidget(self.White_tophat, 2, 2, 1, 1)
+        
         self.Cycle = QtGui.QPushButton("Cycle")
-        self.gridLayout.addWidget(self.Cycle, 6, 0, 1, 1)
+        self.gridLayout.addWidget(self.Cycle, 16, 0, 1, 1)
 
         self.Rotate = QtGui.QPushButton("Rotate")
-        self.gridLayout.addWidget(self.Rotate, 6, 1, 1, 1)
+        self.gridLayout.addWidget(self.Rotate, 16, 1, 1, 1)
 
         self.Reset = QtGui.QPushButton("Reset")
-        self.gridLayout.addWidget(self.Reset, 5, 2, 1, 1)
+        self.gridLayout.addWidget(self.Reset, 17, 2, 1, 1)
+
+        self.Open = QtGui.QPushButton("Open")
+        self.gridLayout.addWidget(self.Open, 18, 2, 1, 1)
 
         self.Save = QtGui.QPushButton("Save")
-        self.gridLayout.addWidget(self.Save, 6, 2, 1, 1)
+        self.gridLayout.addWidget(self.Save, 19, 2, 1, 1)
 
-        # define a slider
+        # define check box fo manual segmentation
+        self.Manual = QtGui.QCheckBox("Manual segmentation")
+#        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
+#                                       QtGui.QSizePolicy.Fixed)
+#        sizePolicy.setHorizontalStretch(0)
+#        sizePolicy.setVerticalStretch(0)
+#        sizePolicy.setHeightForWidth(
+#                self.Manual.sizePolicy().hasHeightForWidth())
+#        self.Manual.setSizePolicy(sizePolicy)
+        self.gridLayout.addWidget(self.Manual, 14, 2, 1, 1)
+
+        # define a horizontal slider
         self.horizontalSlider = QtGui.QSlider(self)
         self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
         self.setObjectName("horizontalSlider")
+        
         # set minimum, maximum and starting value of slider
         self.horizontalSlider.setMinimum(0)
         self.horizontalSlider.setValue(self.val)
         self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
         self.horizontalSlider.setTickPosition(QtGui.QSlider.TicksBelow)
         self.horizontalSlider.setTickInterval(5)
-        self.gridLayout.addWidget(self.horizontalSlider, 5, 0, 1, 2)
+        self.gridLayout.addWidget(self.horizontalSlider, 14, 0, 1, 2)
 
-        # define a horizontal layout
+        # define list widget for listing nii files
+        self.File_names = QtGui.QListWidget(self)
+        self.File_names.addItem(self.basename)
+        self.gridLayout.addWidget(self.File_names, 17, 0, 3, 2)
+
+        # define a vertical spacer
         spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum,
                                        QtGui.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem, 3, 2, 1, 1)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        self.gridLayout.addLayout(self.horizontalLayout, 2, 2, 1, 1)
-        
+        self.gridLayout.addItem(spacerItem, 6, 2, 8, 1)
+
+        # define spin boxes and push button for cluster
         self.cnntvty = QtGui.QSpinBox(self)
         self.cnntvty.setMinimum(1)
         self.cnntvty.setValue(self.cnntvty_val)
         self.cnntvty.setMaximum(len(self.data.shape))
-        self.horizontalLayout.addWidget(self.cnntvty)
+        self.horizontalLayout_cluster.addWidget(self.cnntvty)
         
         self.c_size = QtGui.QSpinBox(self)
         self.c_size.setMinimum(1)
         self.c_size.setValue(self.c_size_val)
         self.c_size.setMaximum(100)
-        self.horizontalLayout.addWidget(self.c_size)
+        self.horizontalLayout_cluster.addWidget(self.c_size)
         
         self.Cluster = QtGui.QPushButton("Cluster")
-        self.horizontalLayout.addWidget(self.Cluster)
+        self.horizontalLayout_cluster.addWidget(self.Cluster)
+
+        # define labels and buttons for region growing
+        self.Seed = QtGui.QLabel("Seed:")
+        self.Seed.setAlignment(QtCore.Qt.AlignCenter)
+        self.horizontalLayout_grow.addWidget(self.Seed)
+    
+        self.Coordns = QtGui.QLabel("X, Y, Z")
+        self.Coordns.setAlignment(QtCore.Qt.AlignCenter)
+        self.horizontalLayout_grow.addWidget(self.Coordns)
+
+        self.Grow = QtGui.QPushButton("Grow")
+        self.horizontalLayout_grow.addWidget(self.Grow)
+
+        # define spin boxes for browser
+        self.cursorBrowserX = QtGui.QSpinBox(self)
+        self.cursorBrowserX.setMinimum(0)
+        self.cursorBrowserX.setValue(self.browser_ind[0])
+        self.cursorBrowserX.setMaximum(self.data.shape[0]-1)
+        self.horizontalLayout_browser.addWidget(self.cursorBrowserX)
+        
+        self.cursorBrowserY = QtGui.QSpinBox(self)
+        self.cursorBrowserY.setMinimum(0)
+        self.cursorBrowserY.setValue(self.browser_ind[1])
+        self.cursorBrowserY.setMaximum(self.data.shape[1]-1)
+        self.horizontalLayout_browser.addWidget(self.cursorBrowserY)
+        
+        self.cursorBrowserZ = QtGui.QSpinBox(self)
+        self.cursorBrowserZ.setMinimum(0)
+        self.cursorBrowserZ.setValue(self.browser_ind[2])
+        self.cursorBrowserZ.setMaximum(self.data.shape[2]-1)
+        self.horizontalLayout_browser.addWidget(self.cursorBrowserZ)
 
         # make the slider reactive to changes
         self.horizontalSlider.sliderMoved.connect(self.sliderMoved)
+
         # make the spin boxes reactive to changes
+        self.cursorBrowserX.valueChanged.connect(self.updateBrowserX)
+        self.cursorBrowserY.valueChanged.connect(self.updateBrowserY)
+        self.cursorBrowserZ.valueChanged.connect(self.updateBrowserZ)
         self.cnntvty.valueChanged.connect(self.updateCnntvty)
         self.c_size.valueChanged.connect(self.updateCsize)
+
+        # make checkbox resposive to change
+        self.Manual.stateChanged.connect(self.updateManual)
 
         # make buttons reactive
         self.Erode.clicked.connect(self.updateEro)
         self.Dilate.clicked.connect(self.updateDil)
+        self.Black_tophat.clicked.connect(self.updateBlack_tophat)
+        self.White_tophat.clicked.connect(self.updateWhite_tophat)
+        self.Grow.clicked.connect(self.updateGrow)
         self.Cluster.clicked.connect(self.updateCluster)
         self.Cycle.clicked.connect(self.updateCycle)
         self.Rotate.clicked.connect(self.updateRotate)
+        self.Open.clicked.connect(self.updateOpen)
         self.Reset.clicked.connect(self.updateReset)
         self.Save.clicked.connect(self.updateSave)
 
@@ -144,7 +227,7 @@ class morphViewer(QtGui.QWidget):
             # update image data
             self.image.setImage(self.data[..., self.val])
 
-    def mouseMoved(self, evt):
+    def mouseClicked(self, evt):
         """Defines actions when mouse button is clicked."""
         evt = evt[0]
         pos = evt.scenePos()
@@ -194,6 +277,14 @@ class morphViewer(QtGui.QWidget):
         # update image of nii data
         self.updatePanels(update_ima=True, update_slider=False)
 
+    def updateBlack_tophat(self):
+        """Defines actions when Black_tophat button is pressed."""
+        print("Not implemented yet")
+
+    def updateWhite_tophat(self):
+        """Defines actions when White_tophat button is pressed."""
+        print("Not implemented yet")
+
     def updateCluster(self):
         """Defines actions when Cluster button is pressed."""
         # perform cluster thresholding
@@ -214,12 +305,24 @@ class morphViewer(QtGui.QWidget):
         # print finish message
         print('Cluster thresholding done.')
 
+    def updateGrow(self):
+        """Defines actions when Grow button is pressed."""
+        print("Not implemented yet")
+
+    def updateOpen(self):
+        """Defines actions when Open button is pressed."""
+#        lineEdit.setText(QFileDialog.getOpenFileName())
+        print("Not implemented yet")
+
     def updateReset(self, inIma):
         """Defines actions when Reset button is pressed."""
         # reset the data
         self.data = self.orig_data
         # reset data type
         self.datatype = self.data.dtype
+        # reset initial checkbpx value
+        self.checkb_val = False
+        self.Manual.setChecked(self.checkb_val)
         # reset initial connectivity value
         self.cnntvty_val = 2
         self.cnntvty.setMinimum(1)
@@ -230,6 +333,8 @@ class morphViewer(QtGui.QWidget):
         self.c_size.setMinimum(1)
         self.c_size.setValue(self.c_size_val)
         self.c_size.setMaximum(100)
+        # reset browser indices
+        self.browser_ind = np.array([0, 0, 0])
         # reset initial transpose counter
         self.trnspCount = np.array([0, 1, 2])
         # reset initial flip counter
@@ -262,6 +367,11 @@ class morphViewer(QtGui.QWidget):
         # update image of nii data
         self.updatePanels(update_ima=True, update_slider=True)
 
+    def updateManual(self):
+        """Defines actions when Manual check box is changed."""
+        self.checkb_val = self.Manual.isChecked()
+        print(self.checkb_val)
+
     def updateCnntvty(self):
         """Defines actions when cnntvty scroll bar is changed."""
         self.cnntvty_val = self.cnntvty.value()
@@ -269,6 +379,18 @@ class morphViewer(QtGui.QWidget):
     def updateCsize(self):
         """Defines actions when cluster size scroll bar is changed."""
         self.c_size_val = self.c_size.value()
+
+    def updateBrowserX(self):
+        """Defines actions when BrowserX scroll bar is changed."""
+        self.browser_ind[0] = self.cursorBrowserX.value()
+
+    def updateBrowserY(self):
+        """Defines actions when BrowserY scroll bar is changed."""
+        self.browser_ind[1] = self.cursorBrowserY.value()
+
+    def updateBrowserZ(self):
+        """Defines actions when BrowserZ scroll bar is changed."""
+        self.browser_ind[2] = self.cursorBrowserZ.value()
 
     def updateSave(self):
         """Defines actions when Save button is pressed."""

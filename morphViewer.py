@@ -24,9 +24,10 @@ app = QtGui.QApplication([])
 mV = morphViewer(data, basename=basename, affine=nii.affine, header=nii.header)
 mV.show()
 
+# make programm response to mouse clicks
 proxy = pg.SignalProxy(mV.viewbox.scene().sigMouseClicked, rateLimit=60,
-                       slot=mV.mouseMoved)
-#mV.viewbox.scene().sigMouseClicked.connect(mV.mouseMoved)
+                       slot=mV.mouseClicked)
+#mV.viewbox.scene().sigMouseClicked.connect(mV.mouseClicked)
 
 mV.raise_()
 app.exec_()
