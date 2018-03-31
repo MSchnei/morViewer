@@ -15,7 +15,7 @@ import numpy as np
 # %% set parameters
 
 # provide string to nii data
-strPathData = '/home/marian/Documents/Testing/testMorphViewer/testIma.nii.gz'
+strPathData = '/Users/Marian/gdrive/testIma.nii.gz'
 
 # %% import data
 
@@ -66,11 +66,11 @@ class Widget(QtGui.QWidget):
 #        self.scene.sceneRect()
 
     def sliderMoved(self, val):
-        print "Slider moved to:", val
+        print("Slider moved to:"), print(val)
         try:
             self.image.setImage(data[:, val, :])
         except IndexError:
-            print "Error: No image at index", val
+            print("Error: No image at index"), print(val)
 
 #    def resizeEvent(self, event):
 #        # if the window is resized
