@@ -63,9 +63,9 @@ class morphViewer(QtGui.QWidget):
         self.horizontalLayout_cluster = QtGui.QHBoxLayout()
         self.gridLayout.addLayout(self.horizontalLayout_cluster, 5, 2, 1, 1)
 
-        # define a horizontal layout for region growing
-        self.horizontalLayout_grow = QtGui.QHBoxLayout()
-        self.gridLayout.addLayout(self.horizontalLayout_grow, 4, 2, 1, 1)
+#        # define a horizontal layout for region growing
+#        self.horizontalLayout_grow = QtGui.QHBoxLayout()
+#        self.gridLayout.addLayout(self.horizontalLayout_grow, 4, 2, 1, 1)
 
         # define a horizontal layout for browser
         self.horizontalLayout_browser = QtGui.QHBoxLayout()
@@ -109,7 +109,7 @@ class morphViewer(QtGui.QWidget):
         self.gridLayout.addWidget(self.Save, 19, 2, 1, 1)
 
         # define check box fo manual segmentation
-        self.Manual = QtGui.QCheckBox("Manual segmentation")
+#        self.Manual = QtGui.QCheckBox("Manual segmentation")
 #        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum,
 #                                       QtGui.QSizePolicy.Fixed)
 #        sizePolicy.setHorizontalStretch(0)
@@ -117,7 +117,7 @@ class morphViewer(QtGui.QWidget):
 #        sizePolicy.setHeightForWidth(
 #                self.Manual.sizePolicy().hasHeightForWidth())
 #        self.Manual.setSizePolicy(sizePolicy)
-        self.gridLayout.addWidget(self.Manual, 14, 2, 1, 1)
+#        self.gridLayout.addWidget(self.Manual, 14, 2, 1, 1)
 
         # define a horizontal slider
         self.horizontalSlider = QtGui.QSlider(self)
@@ -159,16 +159,16 @@ class morphViewer(QtGui.QWidget):
         self.horizontalLayout_cluster.addWidget(self.Cluster)
 
         # define labels and buttons for region growing
-        self.Seed = QtGui.QLabel("Seed:")
-        self.Seed.setAlignment(QtCore.Qt.AlignCenter)
-        self.horizontalLayout_grow.addWidget(self.Seed)
+#        self.Seed = QtGui.QLabel("Seed:")
+#        self.Seed.setAlignment(QtCore.Qt.AlignCenter)
+#        self.horizontalLayout_grow.addWidget(self.Seed)
     
-        self.Coordns = QtGui.QLabel("X, Y, Z")
-        self.Coordns.setAlignment(QtCore.Qt.AlignCenter)
-        self.horizontalLayout_grow.addWidget(self.Coordns)
+#        self.Coordns = QtGui.QLabel("X, Y, Z")
+#        self.Coordns.setAlignment(QtCore.Qt.AlignCenter)
+#        self.horizontalLayout_grow.addWidget(self.Coordns)
 
-        self.Grow = QtGui.QPushButton("Grow")
-        self.horizontalLayout_grow.addWidget(self.Grow)
+#        self.Grow = QtGui.QPushButton("Grow")
+#        self.horizontalLayout_grow.addWidget(self.Grow)
 
         # define spin boxes for browser
         self.cursorBrowserX = QtGui.QSpinBox(self)
@@ -200,14 +200,14 @@ class morphViewer(QtGui.QWidget):
         self.c_size.valueChanged.connect(self.updateCsize)
 
         # make checkbox resposive to change
-        self.Manual.stateChanged.connect(self.updateManual)
+#        self.Manual.stateChanged.connect(self.updateManual)
 
         # make buttons reactive
         self.Erode.clicked.connect(self.updateEro)
         self.Dilate.clicked.connect(self.updateDil)
         self.Black_tophat.clicked.connect(self.updateBlack_tophat)
         self.White_tophat.clicked.connect(self.updateWhite_tophat)
-        self.Grow.clicked.connect(self.updateGrow)
+#        self.Grow.clicked.connect(self.updateGrow)
         self.Cluster.clicked.connect(self.updateCluster)
         self.Cycle.clicked.connect(self.updateCycle)
         self.Rotate.clicked.connect(self.updateRotate)
@@ -322,7 +322,7 @@ class morphViewer(QtGui.QWidget):
         self.datatype = self.data.dtype
         # reset initial checkbpx value
         self.checkb_val = False
-        self.Manual.setChecked(self.checkb_val)
+#        self.Manual.setChecked(self.checkb_val)
         # reset initial connectivity value
         self.cnntvty_val = 2
         self.cnntvty.setMinimum(1)
@@ -367,10 +367,10 @@ class morphViewer(QtGui.QWidget):
         # update image of nii data
         self.updatePanels(update_ima=True, update_slider=True)
 
-    def updateManual(self):
-        """Defines actions when Manual check box is changed."""
-        self.checkb_val = self.Manual.isChecked()
-        print(self.checkb_val)
+#    def updateManual(self):
+#        """Defines actions when Manual check box is changed."""
+#        self.checkb_val = self.Manual.isChecked()
+#        print(self.checkb_val)
 
     def updateCnntvty(self):
         """Defines actions when cnntvty scroll bar is changed."""
