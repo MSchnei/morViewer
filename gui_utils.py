@@ -110,6 +110,12 @@ class morphViewer(QtGui.QWidget):
 
         # define check box fo manual segmentation
         self.Manual = QtGui.QCheckBox("Manual segmentation")
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum,
+                                       QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.Manual.sizePolicy().hasHeightForWidth())
+        self.Manual.setSizePolicy(sizePolicy)
         self.gridLayout.addWidget(self.Manual, 14, 2, 1, 1)
 
         # define a horizontal slider
@@ -153,11 +159,23 @@ class morphViewer(QtGui.QWidget):
 
         # define labels and buttons for region growing
         self.Seed = QtGui.QLabel("Seed:")
-#        self.Seed.setAlignment(QtCore.Qt.AlignCenter)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum,
+                                       QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.Seed.sizePolicy().hasHeightForWidth())
+        self.Seed.setSizePolicy(sizePolicy)
+        self.Seed.setAlignment(QtCore.Qt.AlignCenter)
         self.horizontalLayout_grow.addWidget(self.Seed)
     
         self.Coordns = QtGui.QLabel("X, Y, Z")
-#        self.Coordns.setAlignment(QtCore.Qt.AlignCenter)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum,
+                                       QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.Coordns.sizePolicy().hasHeightForWidth())
+        self.Coordns.setSizePolicy(sizePolicy)
+        self.Coordns.setAlignment(QtCore.Qt.AlignCenter)
         self.horizontalLayout_grow.addWidget(self.Coordns)
 
         self.Grow = QtGui.QPushButton("Grow")
