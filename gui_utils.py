@@ -13,6 +13,7 @@ from PyQt4 import QtCore, QtGui
 from nibabel import save, Nifti1Image, Nifti1Header
 from scipy.ndimage import morphology
 from skimage.measure import label
+from utils import grow_reg
 
 class morphViewer(QtGui.QWidget):
 
@@ -77,7 +78,6 @@ class morphViewer(QtGui.QWidget):
         self.image = pg.ImageItem(border=(205, 92, 92))
         self.image.setImage(self.data[..., self.val])
         self.viewbox.addItem(self.image)
-        self.viewbox.setMenuEnabled(False)
         self.gridLayout.addWidget(self.graphicsView, 0, 0, 14, 2)
 
         # define all the buttons
@@ -214,7 +214,6 @@ class morphViewer(QtGui.QWidget):
             # updates slider
             self.horizontalSlider.setMinimum(0)
             self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
-            self.val = int((self.val/self.data.shape[0]) * self.data.shape[-1])
             self.horizontalSlider.setValue(self.val)
         if update_ima:
             # update image data
@@ -307,7 +306,13 @@ class morphViewer(QtGui.QWidget):
 
     def updateGrow(self):
         """Defines actions when Grow button is pressed."""
-        print("Not implemented yet")
+        print("Grow region")
+        # get seed value
+        seed = tuple(self.browser_ind.astype('int8'))
+        print("... with seed " + str(self.browser_ind))
+        self.data = grow_reg(self.data, seed, n_size=5)
+        print("... done")
+        self.updatePanels(update_ima=True, update_slider=False)
 
     def updateOpen(self):
         """Defines actions when Open button is pressed."""
@@ -320,6 +325,8 @@ class morphViewer(QtGui.QWidget):
         self.data = self.orig_data
         # reset data type
         self.datatype = self.data.dtype
+        # reset slice value
+        self.val = 0
         # reset initial checkbpx value
         self.checkb_val = False
         self.Manual.setChecked(self.checkb_val)
@@ -335,6 +342,12 @@ class morphViewer(QtGui.QWidget):
         self.c_size.setMaximum(100)
         # reset browser indices
         self.browser_ind = np.array([0, 0, 0])
+        # reset browser spin boxes
+        self.cursorBrowserX.setValue(self.browser_ind[0])
+        self.cursorBrowserY.setValue(self.browser_ind[1])
+        self.cursorBrowserZ.setValue(self.browser_ind[2])
+        # reset seed label
+        self.Coordns.setText(str(self.browser_ind))
         # reset initial transpose counter
         self.trnspCount = np.array([0, 1, 2])
         # reset initial flip counter
@@ -364,12 +377,20 @@ class morphViewer(QtGui.QWidget):
         # indicate that axes 0 and 1 were transposed
         self.trnspCount = self.trnspCount[[2, 0, 1]]
         self.flpCount = self.flpCount[[2, 0, 1]]
+        # update slice value
+        self.val = int((self.val/self.data.shape[0]) * self.data.shape[-1])
         # update image of nii data
         self.updatePanels(update_ima=True, update_slider=True)
 
     def updateManual(self):
         """Defines actions when Manual check box is changed."""
         self.checkb_val = self.Manual.isChecked()
+        if self.checkb_val:
+            # disable the automatic context menu upon right-click
+            self.viewbox.setMenuEnabled(False)
+        else:
+            # enable the automatic context menu upon right-click
+            self.viewbox.setMenuEnabled(True)
 
     def updateCnntvty(self):
         """Defines actions when cnntvty scroll bar is changed."""
@@ -382,14 +403,17 @@ class morphViewer(QtGui.QWidget):
     def updateBrowserX(self):
         """Defines actions when BrowserX scroll bar is changed."""
         self.browser_ind[0] = self.cursorBrowserX.value()
+        self.Coordns.setText(str(self.browser_ind))
 
     def updateBrowserY(self):
         """Defines actions when BrowserY scroll bar is changed."""
         self.browser_ind[1] = self.cursorBrowserY.value()
+        self.Coordns.setText(str(self.browser_ind))
 
     def updateBrowserZ(self):
         """Defines actions when BrowserZ scroll bar is changed."""
         self.browser_ind[2] = self.cursorBrowserZ.value()
+        self.Coordns.setText(str(self.browser_ind))
 
     def updateSave(self):
         """Defines actions when Save button is pressed."""

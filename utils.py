@@ -12,31 +12,99 @@ from nibabel import load
 import numpy as np
 
 
-strPathData1 = '/Users/Marian/gdrive/testIma.nii.gz'
-nii1 = load(strPathData1)
-basename = nii1.get_filename().split(os.extsep, 1)[0]
-dirname = os.path.dirname(nii1.get_filename())
-ima1 = nii1.get_data().astype('int8')
+#strPathData1 = '/Users/Marian/gdrive/testIma.nii.gz'
+#nii1 = load(strPathData1)
+#basename = nii1.get_filename().split(os.extsep, 1)[0]
+#dirname = os.path.dirname(nii1.get_filename())
+#ima1 = nii1.get_data().astype('int8')
+#
+#strPathData2 = '/Users/Marian/gdrive/testIma_morph_0.nii.gz'
+#
+#nii2 = load(strPathData2)
+#basename = nii2.get_filename().split(os.extsep, 1)[0]
+#dirname = os.path.dirname(nii2.get_filename())
+#ima2 = nii2.get_data().astype('int8')
 
-strPathData2 = '/Users/Marian/gdrive/testIma_morph_0.nii.gz'
-
-nii2 = load(strPathData2)
-basename = nii2.get_filename().split(os.extsep, 1)[0]
-dirname = os.path.dirname(nii2.get_filename())
-ima2 = nii2.get_data().astype('int8')
-
-def rtnDiffVox(ima1, ima2, lstInd):
+def rtn_diff_vox(ima1, ima2, lstInd):
     """Calculate indices of voxels that were added or subtracted."""
     # get bool for values that are now included    
     now_incl = np.logical_and(ima1==0, ima2==1)
     # get bool for values that are now excluded
     now_excl = np.logical_and(ima1==1, ima2==0)
     # get non-zero indices for now included voxels
-    %timeit ind_now_incl = np.flatnonzero(now_incl)
+    ind_now_incl = np.flatnonzero(now_incl)
     # get non-zero indices for now excluded voxels    
-    %timeit ind_now_excl = np.flatnonzero(now_excl)
+    ind_now_excl = np.flatnonzero(now_excl)
 
     lstInd[0].append(ind_now_incl)
     lstInd[1].append(ind_now_excl)
     
     return lstInd    
+
+def get_nbhd(pt, checked, dims):
+    """Get 6 voxel neighborhood."""
+    nbhd = []
+
+    if (pt[0] > 0) and not checked[pt[0]-1, pt[1], pt[2]]:
+        nbhd.append((pt[0]-1, pt[1], pt[2]))
+    if (pt[1] > 0) and not checked[pt[0], pt[1]-1, pt[2]]:
+        nbhd.append((pt[0], pt[1]-1, pt[2]))
+    if (pt[2] > 0) and not checked[pt[0], pt[1], pt[2]-1]:
+        nbhd.append((pt[0], pt[1], pt[2]-1))
+
+    if (pt[0] < dims[0]-1) and not checked[pt[0]+1, pt[1], pt[2]]:
+        nbhd.append((pt[0]+1, pt[1], pt[2]))
+    if (pt[1] < dims[1]-1) and not checked[pt[0], pt[1]+1, pt[2]]:
+        nbhd.append((pt[0], pt[1]+1, pt[2]))
+    if (pt[2] < dims[2]-1) and not checked[pt[0], pt[1], pt[2]+1]:
+        nbhd.append((pt[0], pt[1], pt[2]+1))
+
+    return nbhd
+
+def grow_reg(data, seed, n_size=5):
+    """
+    data: ndarray, ndim=3
+        3D volumetric data.
+    
+    seed: tuple, len=3
+        Region growing starts from this point.
+
+    n_size: int
+        The image neighborhood radius for the inclusion criteria.
+    -----
+    source: http://notmatthancock.github.io/
+    """
+    seg = np.zeros(data.shape, dtype=np.bool)
+    checked = np.zeros_like(seg)
+
+    seg[seed] = True
+    checked[seed] = True
+    needs_check = get_nbhd(seed, checked, data.shape)
+
+    while len(needs_check) > 0:
+        pt = needs_check.pop()
+
+        # Its possible that the point was already checked and was
+        # put in the needs_check stack multiple times.
+        if checked[pt]: continue
+
+        checked[pt] = True
+
+        # Handle borders.
+        imin = max(pt[0]-n_size, 0)
+        imax = min(pt[0]+n_size, data.shape[0]-1)
+        jmin = max(pt[1]-n_size, 0)
+        jmax = min(pt[1]+n_size, data.shape[1]-1)
+        kmin = max(pt[2]-n_size, 0)
+        kmax = min(pt[2]+n_size, data.shape[2]-1)
+
+        if data[pt] >= data[imin:imax+1, jmin:jmax+1, kmin:kmax+1].mean():
+            # Include the voxel in the segmentation and
+            # add its neighbors to be checked.
+            seg[pt] = True
+            needs_check += get_nbhd(pt, checked, data.shape)
+            
+    seg = seg.astype('int8')
+    print(np.unique(seg))
+
+    return seg
