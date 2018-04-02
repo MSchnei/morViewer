@@ -208,13 +208,21 @@ class morphViewer(QtGui.QWidget):
         self.Reset.clicked.connect(self.updateReset)
         self.Save.clicked.connect(self.updateSave)
 
-    def updatePanels(self, update_ima=True, update_slider=False):
+    def updatePanels(self, update_ima=True, update_boxes=False,
+                     update_slider=False):
         """Update viewer panels."""
         if update_slider:
             # updates slider
             self.horizontalSlider.setMinimum(0)
             self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
             self.horizontalSlider.setValue(self.val)
+        if update_boxes:
+            self.cursorBrowserX.setMinimum(0)
+            self.cursorBrowserX.setMaximum(self.data.shape[0]-1)
+            self.cursorBrowserY.setMinimum(0)
+            self.cursorBrowserY.setMaximum(self.data.shape[1]-1)
+            self.cursorBrowserZ.setMinimum(0)
+            self.cursorBrowserZ.setMaximum(self.data.shape[2]-1)
         if update_ima:
             # update image data
             self.image.setImage(self.data[..., self.val])
@@ -255,11 +263,14 @@ class morphViewer(QtGui.QWidget):
 
     def sliderMoved(self, val):
         """Defines actions when slider is moved."""
+        # udate value for slicing
         self.val = val
-        try:
-            self.updatePanels(update_ima=True, update_slider=False)
-        except IndexError:
-            print("Error: No image at index", self.val)
+        # update browser index
+        self.browser_ind[2] = np.copy(self.val)
+        # update spin boxes
+        self.cursorBrowserZ.setValue(self.val)
+        # update panels
+        self.updatePanels(update_ima=True, update_slider=False)
 
     def updateEro(self):
         """Defines actions when Erode button is pressed."""
@@ -383,7 +394,8 @@ class morphViewer(QtGui.QWidget):
         # update slice value
         self.val = int((self.val/self.data.shape[0]) * self.data.shape[-1])
         # update image of nii data
-        self.updatePanels(update_ima=True, update_slider=True)
+        self.updatePanels(update_ima=True, update_slider=True,
+                          update_boxes=True)
 
     def updateManual(self):
         """Defines actions when Manual check box is changed."""
@@ -417,7 +429,7 @@ class morphViewer(QtGui.QWidget):
         """Defines actions when BrowserZ scroll bar is changed."""
         self.browser_ind[2] = self.cursorBrowserZ.value()
         self.Coordns.setText(str(self.browser_ind))
-        self.val = self.browser_ind[2]
+        self.val = np.copy(self.browser_ind[2])
         self.updatePanels(update_ima=True, update_slider=True)
 
     def updateSave(self):
