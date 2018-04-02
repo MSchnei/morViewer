@@ -247,6 +247,9 @@ class morphViewer(QtGui.QWidget):
                 self.cursorBrowserX.setValue(self.browser_ind[0])
                 self.cursorBrowserY.setValue(self.browser_ind[1])
                 self.cursorBrowserZ.setValue(self.browser_ind[2])
+                print("data value:")
+                print(self.data[int(mousePoint.x()), int(mousePoint.y()),
+                                self.val])
             # update the panels
             self.updatePanels(update_ima=True, update_slider=False)
 
@@ -308,9 +311,9 @@ class morphViewer(QtGui.QWidget):
         """Defines actions when Grow button is pressed."""
         print("Grow region")
         # get seed value
-        seed = tuple(self.browser_ind.astype('int8'))
+        seed = tuple(self.browser_ind)
         print("... with seed " + str(self.browser_ind))
-        self.data = grow_reg(self.data, seed, n_size=5)
+        self.data = grow_reg(self.data, seed)
         print("... done")
         self.updatePanels(update_ima=True, update_slider=False)
 
@@ -414,6 +417,8 @@ class morphViewer(QtGui.QWidget):
         """Defines actions when BrowserZ scroll bar is changed."""
         self.browser_ind[2] = self.cursorBrowserZ.value()
         self.Coordns.setText(str(self.browser_ind))
+        self.val = self.browser_ind[2]
+        self.updatePanels(update_ima=True, update_slider=True)
 
     def updateSave(self):
         """Defines actions when Save button is pressed."""
