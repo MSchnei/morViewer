@@ -41,70 +41,59 @@ def rtn_diff_vox(ima1, ima2, lstInd):
     
     return lstInd    
 
-def get_nbhd(pt, checked, dims):
+def get_nbhd(pnt, checked, dims):
     """Get 6 voxel neighborhood."""
     nbhd = []
 
-    if (pt[0] > 0) and not checked[pt[0]-1, pt[1], pt[2]]:
-        nbhd.append((pt[0]-1, pt[1], pt[2]))
-    if (pt[1] > 0) and not checked[pt[0], pt[1]-1, pt[2]]:
-        nbhd.append((pt[0], pt[1]-1, pt[2]))
-    if (pt[2] > 0) and not checked[pt[0], pt[1], pt[2]-1]:
-        nbhd.append((pt[0], pt[1], pt[2]-1))
+    if (pnt[0] > 0) and not checked[pnt[0]-1, pnt[1], pnt[2]]:
+        nbhd.append((pnt[0]-1, pnt[1], pnt[2]))
+    if (pnt[1] > 0) and not checked[pnt[0], pnt[1]-1, pnt[2]]:
+        nbhd.append((pnt[0], pnt[1]-1, pnt[2]))
+    if (pnt[2] > 0) and not checked[pnt[0], pnt[1], pnt[2]-1]:
+        nbhd.append((pnt[0], pnt[1], pnt[2]-1))
 
-    if (pt[0] < dims[0]-1) and not checked[pt[0]+1, pt[1], pt[2]]:
-        nbhd.append((pt[0]+1, pt[1], pt[2]))
-    if (pt[1] < dims[1]-1) and not checked[pt[0], pt[1]+1, pt[2]]:
-        nbhd.append((pt[0], pt[1]+1, pt[2]))
-    if (pt[2] < dims[2]-1) and not checked[pt[0], pt[1], pt[2]+1]:
-        nbhd.append((pt[0], pt[1], pt[2]+1))
+    if (pnt[0] < dims[0]-1) and not checked[pnt[0]+1, pnt[1], pnt[2]]:
+        nbhd.append((pnt[0]+1, pnt[1], pnt[2]))
+    if (pnt[1] < dims[1]-1) and not checked[pnt[0], pnt[1]+1, pnt[2]]:
+        nbhd.append((pnt[0], pnt[1]+1, pnt[2]))
+    if (pnt[2] < dims[2]-1) and not checked[pnt[0], pnt[1], pnt[2]+1]:
+        nbhd.append((pnt[0], pnt[1], pnt[2]+1))
 
     return nbhd
 
-def grow_reg(data, seed, n_size=5):
+def grow_reg(data, seed):
     """
     data: ndarray, ndim=3
         3D volumetric data.
     
     seed: tuple, len=3
         Region growing starts from this point.
-
-    n_size: int
-        The image neighborhood radius for the inclusion criteria.
     -----
     source: http://notmatthancock.github.io/
     """
-    seg = np.zeros(data.shape, dtype=np.bool)
-    checked = np.zeros_like(seg)
-
-    seg[seed] = True
+    reg = np.zeros(data.shape, dtype=np.int8)
+    checked = np.zeros(data.shape, dtype=np.bool)
+    
+    # set region image to True for seed point
+    reg[seed] = 1
+    # set seed point checked
     checked[seed] = True
+    # set neighborhood of seed point on list to be checked
     needs_check = get_nbhd(seed, checked, data.shape)
 
     while len(needs_check) > 0:
-        pt = needs_check.pop()
+        pnt = needs_check.pop()
 
         # Its possible that the point was already checked and was
         # put in the needs_check stack multiple times.
-        if checked[pt]: continue
+        if checked[pnt]:
+            continue
+        if data[pnt] == 1:
+            # set region image to True for point
+            reg[pnt] = 1
+            # set point checked
+            checked[pnt] = True
+            # set neighborhood of point on list to be checked
+            needs_check += get_nbhd(pnt, checked, data.shape)
 
-        checked[pt] = True
-
-        # Handle borders.
-        imin = max(pt[0]-n_size, 0)
-        imax = min(pt[0]+n_size, data.shape[0]-1)
-        jmin = max(pt[1]-n_size, 0)
-        jmax = min(pt[1]+n_size, data.shape[1]-1)
-        kmin = max(pt[2]-n_size, 0)
-        kmax = min(pt[2]+n_size, data.shape[2]-1)
-
-        if data[pt] >= data[imin:imax+1, jmin:jmax+1, kmin:kmax+1].mean():
-            # Include the voxel in the segmentation and
-            # add its neighbors to be checked.
-            seg[pt] = True
-            needs_check += get_nbhd(pt, checked, data.shape)
-            
-    seg = seg.astype('int8')
-    print(np.unique(seg))
-
-    return seg
+    return reg.astype('int8')
