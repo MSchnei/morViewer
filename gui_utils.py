@@ -29,16 +29,16 @@ class morphViewer(QtGui.QWidget):
         self.datatype = self.data.dtype
         # set initial window size
         self.resize(800, 800)
-        # set initial slider value
-        self.val = int((self.data.shape[-1]-1)/2.)
+        # set intial browser indices
+        self.browser_ind = np.array(
+            [int(self.data.shape[0]/2.), int(self.data.shape[1]/2.),
+             int(self.data.shape[2]/2.)], dtype='int64')
         # set initial checkbpx value
         self.checkb_val = False
         # set initial connectivity value
         self.cnntvty_val = 2
         # set cluster size value
         self.c_size_val = 26
-        # set intial browser indices
-        self.browser_ind = np.array([0, 0, 0])
         # set initial tranpose counter
         self.trnspCount = np.array([0, 1, 2])
         # set initial flip counter
@@ -76,7 +76,7 @@ class morphViewer(QtGui.QWidget):
         self.graphicsView = pg.GraphicsWindow()
         self.viewbox = self.graphicsView.addViewBox(lockAspect=1)  # aspect rat
         self.image = pg.ImageItem(border=(205, 92, 92))
-        self.image.setImage(self.data[..., self.val])
+        self.image.setImage(self.data[..., self.browser_ind[2]])
         self.viewbox.addItem(self.image)
         self.gridLayout.addWidget(self.graphicsView, 0, 0, 14, 2)
 
@@ -119,7 +119,7 @@ class morphViewer(QtGui.QWidget):
         
         # set minimum, maximum and starting value of slider
         self.horizontalSlider.setMinimum(0)
-        self.horizontalSlider.setValue(self.val)
+        self.horizontalSlider.setValue(self.browser_ind[2])
         self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
         self.horizontalSlider.setTickPosition(QtGui.QSlider.TicksBelow)
         self.horizontalSlider.setTickInterval(5)
@@ -158,6 +158,7 @@ class morphViewer(QtGui.QWidget):
 
         self.Coordns = QtGui.QLabel("X, Y, Z")
         self.Coordns.setAlignment(QtCore.Qt.AlignCenter)
+        self.Coordns.setText(str(self.browser_ind))
         self.horizontalLayout_grow.addWidget(self.Coordns)
 
         self.Grow = QtGui.QPushButton("Grow")
@@ -215,7 +216,7 @@ class morphViewer(QtGui.QWidget):
             # updates slider
             self.horizontalSlider.setMinimum(0)
             self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
-            self.horizontalSlider.setValue(self.val)
+            self.horizontalSlider.setValue(self.browser_ind[2])
         if update_boxes:
             self.cursorBrowserX.setMinimum(0)
             self.cursorBrowserX.setMaximum(self.data.shape[0]-1)
@@ -223,9 +224,13 @@ class morphViewer(QtGui.QWidget):
             self.cursorBrowserY.setMaximum(self.data.shape[1]-1)
             self.cursorBrowserZ.setMinimum(0)
             self.cursorBrowserZ.setMaximum(self.data.shape[2]-1)
+            # change values for browser spin boxes
+            self.cursorBrowserX.setValue(self.browser_ind[0])
+            self.cursorBrowserY.setValue(self.browser_ind[1])
+            self.cursorBrowserZ.setValue(self.browser_ind[2])
         if update_ima:
             # update image data
-            self.image.setImage(self.data[..., self.val])
+            self.image.setImage(self.data[..., self.browser_ind[2]])
 
     def mouseClicked(self, evt):
         """Defines actions when mouse button is clicked."""
@@ -238,37 +243,32 @@ class morphViewer(QtGui.QWidget):
                 if evt.button() == 1:
                     # add pixel
                     self.data[int(mousePoint.x()), int(mousePoint.y()),
-                              self.val] = 1
+                              self.browser_ind[2]] = 1
                     self.viewbox.setOpacity(0.9)
                 elif evt.button() == 2:
                     # delete pixel
                     self.data[int(mousePoint.x()), int(mousePoint.y()),
-                              self.val] = 0
+                              self.browser_ind[2]] = 0
                     self.viewbox.setOpacity(0.1)
+                # update the panels
+                self.updatePanels(update_ima=True)
             else:
             # browser mode
                 # update browser values
                 self.browser_ind[0] = int(mousePoint.x())
                 self.browser_ind[1] = int(mousePoint.y())
-                self.browser_ind[2] = self.val
-                # update spin
-                self.cursorBrowserX.setValue(self.browser_ind[0])
-                self.cursorBrowserY.setValue(self.browser_ind[1])
-                self.cursorBrowserZ.setValue(self.browser_ind[2])
                 print("data value:")
                 print(self.data[int(mousePoint.x()), int(mousePoint.y()),
-                                self.val])
-            # update the panels
-            self.updatePanels(update_ima=True, update_slider=False)
+                                self.browser_ind[2]])
+                # update the panels
+                self.updatePanels(update_ima=True, update_boxes=True)
 
     def sliderMoved(self, val):
         """Defines actions when slider is moved."""
         # udate value for slicing
-        self.val = val
-        # update browser index
-        self.browser_ind[2] = np.copy(self.val)
+        self.browser_ind[2] = val
         # update spin boxes
-        self.cursorBrowserZ.setValue(self.val)
+        self.cursorBrowserZ.setValue(self.browser_ind[2])
         # update panels
         self.updatePanels(update_ima=True, update_slider=False)
 
@@ -336,11 +336,13 @@ class morphViewer(QtGui.QWidget):
     def updateReset(self, inIma):
         """Defines actions when Reset button is pressed."""
         # reset the data
-        self.data = self.orig_data
+        self.data = np.copy(self.orig_data)
         # reset data type
         self.datatype = self.data.dtype
-        # reset slice value
-        self.val = 0
+        # reset browser indices
+        self.browser_ind = np.array(
+            [int(self.data.shape[0]/2.), int(self.data.shape[1]/2.),
+             int(self.data.shape[2]/2.)], dtype='int64')
         # reset initial checkbpx value
         self.checkb_val = False
         self.Manual.setChecked(self.checkb_val)
@@ -354,12 +356,6 @@ class morphViewer(QtGui.QWidget):
         self.c_size.setMinimum(1)
         self.c_size.setValue(self.c_size_val)
         self.c_size.setMaximum(100)
-        # reset browser indices
-        self.browser_ind = np.array([0, 0, 0])
-        # reset browser spin boxes
-        self.cursorBrowserX.setValue(self.browser_ind[0])
-        self.cursorBrowserY.setValue(self.browser_ind[1])
-        self.cursorBrowserZ.setValue(self.browser_ind[2])
         # reset seed label
         self.Coordns.setText(str(self.browser_ind))
         # reset initial transpose counter
@@ -369,20 +365,24 @@ class morphViewer(QtGui.QWidget):
         # reset nr of exports
         self.nrExports = 0
         # reset the image
-        self.updatePanels(update_ima=True, update_slider=True)
+        self.updatePanels(update_ima=True, update_slider=True,
+                          update_boxes=True)
 
     def updateRotate(self):
         """Defines actions when Rotate button is pressed."""
         # rotate the data by 90 degrees
         self.data = np.transpose(self.data, (1, 0, 2))
         self.data = self.data[::-1, ::1, ::1]
+        # update browser indices
+        self.browser_ind = self.browser_ind[[1, 0, 2]]
+        self.browser_ind[0] = np.abs(self.browser_ind[0] - self.data.shape[0])
         # indicate that axes 0 and 1 were transposed
         self.trnspCount = self.trnspCount[[1, 0, 2]]
         self.flpCount = self.flpCount[[1, 0, 2]]
         # indicate that axis was flipped
         self.flpCount = self.flpCount * np.array([-1, 1, 1])
         # update the panels
-        self.updatePanels(update_ima=True, update_slider=False)
+        self.updatePanels(update_ima=True, update_boxes=True)
 
     def updateCycle(self):
         """Cycle through different image views."""
@@ -391,8 +391,21 @@ class morphViewer(QtGui.QWidget):
         # indicate that axes 0 and 1 were transposed
         self.trnspCount = self.trnspCount[[2, 0, 1]]
         self.flpCount = self.flpCount[[2, 0, 1]]
-        # update slice value
-        self.val = int((self.val/self.data.shape[0]) * self.data.shape[-1])
+        
+        # change browser values
+        self.browser_ind = self.browser_ind[[2, 0, 1]]
+        if self.browser_ind[0] > self.data.shape[0]:
+            self.browser_ind[0] = int(
+                (self.browser_ind[0]/self.browser_ind[2]) *
+                 self.browser_ind[0])
+        if self.browser_ind[1] > self.data.shape[1]:
+            self.browser_ind[1] = int(
+                (self.browser_ind[1]/self.browser_ind[0]) *
+                 self.browser_ind[1])
+        if self.browser_ind[2] > self.data.shape[2]:
+            self.browser_ind[2] = int(
+                (self.browser_ind[2]/self.browser_ind[1]) *
+                 self.browser_ind[2])
         # update image of nii data
         self.updatePanels(update_ima=True, update_slider=True,
                           update_boxes=True)
@@ -429,7 +442,6 @@ class morphViewer(QtGui.QWidget):
         """Defines actions when BrowserZ scroll bar is changed."""
         self.browser_ind[2] = self.cursorBrowserZ.value()
         self.Coordns.setText(str(self.browser_ind))
-        self.val = np.copy(self.browser_ind[2])
         self.updatePanels(update_ima=True, update_slider=True)
 
     def updateSave(self):
