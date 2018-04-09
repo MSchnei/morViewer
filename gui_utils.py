@@ -33,6 +33,10 @@ class morphViewer(QtGui.QWidget):
         self.browser_ind = np.array(
             [int(self.data.shape[0]/2.), int(self.data.shape[1]/2.),
              int(self.data.shape[2]/2.)], dtype='int64')
+        # determine gloabl minimum of the data
+        self.globMin = np.min(self.data[:])
+        # determine gloabl maxiumum of the data
+        self.globMax = np.max(self.data[:])
         # set initial checkbpx value
         self.checkb_val = False
         # set initial connectivity value
@@ -76,7 +80,8 @@ class morphViewer(QtGui.QWidget):
         self.graphicsView = pg.GraphicsWindow()
         self.viewbox = self.graphicsView.addViewBox(lockAspect=1)  # aspect rat
         self.image = pg.ImageItem(border=(205, 92, 92))
-        self.image.setImage(self.data[..., self.browser_ind[2]])
+        self.image.setImage(self.data[..., self.browser_ind[2]],
+                            levels=(self.globMin, self.globMax))
         self.viewbox.addItem(self.image)
         self.gridLayout.addWidget(self.graphicsView, 0, 0, 14, 2)
 
@@ -119,8 +124,8 @@ class morphViewer(QtGui.QWidget):
         
         # set minimum, maximum and starting value of slider
         self.horizontalSlider.setMinimum(0)
-        self.horizontalSlider.setValue(self.browser_ind[2])
         self.horizontalSlider.setMaximum(self.data.shape[-1]-1)
+        self.horizontalSlider.setValue(self.browser_ind[2])
         self.horizontalSlider.setTickPosition(QtGui.QSlider.TicksBelow)
         self.horizontalSlider.setTickInterval(5)
         self.gridLayout.addWidget(self.horizontalSlider, 14, 0, 1, 2)
@@ -167,20 +172,20 @@ class morphViewer(QtGui.QWidget):
         # define spin boxes for browser
         self.cursorBrowserX = QtGui.QSpinBox(self)
         self.cursorBrowserX.setMinimum(0)
-        self.cursorBrowserX.setValue(self.browser_ind[0])
         self.cursorBrowserX.setMaximum(self.data.shape[0]-1)
+        self.cursorBrowserX.setValue(self.browser_ind[0])
         self.horizontalLayout_browser.addWidget(self.cursorBrowserX)
         
         self.cursorBrowserY = QtGui.QSpinBox(self)
         self.cursorBrowserY.setMinimum(0)
-        self.cursorBrowserY.setValue(self.browser_ind[1])
         self.cursorBrowserY.setMaximum(self.data.shape[1]-1)
+        self.cursorBrowserY.setValue(self.browser_ind[1])
         self.horizontalLayout_browser.addWidget(self.cursorBrowserY)
         
         self.cursorBrowserZ = QtGui.QSpinBox(self)
         self.cursorBrowserZ.setMinimum(0)
-        self.cursorBrowserZ.setValue(self.browser_ind[2])
         self.cursorBrowserZ.setMaximum(self.data.shape[2]-1)
+        self.cursorBrowserZ.setValue(self.browser_ind[2])
         self.horizontalLayout_browser.addWidget(self.cursorBrowserZ)
 
         # make the slider reactive to changes
@@ -230,7 +235,8 @@ class morphViewer(QtGui.QWidget):
             self.cursorBrowserZ.setValue(self.browser_ind[2])
         if update_ima:
             # update image data
-            self.image.setImage(self.data[..., self.browser_ind[2]])
+            self.image.setImage(self.data[..., self.browser_ind[2]],
+                                levels=(self.globMin, self.globMax))
 
     def mouseClicked(self, evt):
         """Defines actions when mouse button is clicked."""
@@ -292,11 +298,27 @@ class morphViewer(QtGui.QWidget):
 
     def updateBlack_tophat(self):
         """Defines actions when Black_tophat button is pressed."""
-        print("Not implemented yet")
+        # copy input data
+        tempData = np.copy(self.data)
+        print("perform closing of input image")
+        tempData = morphology.binary_dilation(tempData, iterations=1)
+        tempData = morphology.binary_erosion(tempData, iterations=1)
+        print("subtract input image from closing of the input image")
+        self.data = np.subtract(tempData, self.data)
+        # update image of nii data
+        self.updatePanels(update_ima=True)
 
     def updateWhite_tophat(self):
         """Defines actions when White_tophat button is pressed."""
-        print("Not implemented yet")
+        # copy input data
+        tempData = np.copy(self.data)
+        print("perform opening of input image")
+        tempData = morphology.binary_erosion(tempData, iterations=1)
+        tempData = morphology.binary_dilation(tempData, iterations=1)
+        print("subtract opening of the input image from input image") 
+        self.data = np.subtract(self.data, tempData)
+        # update image of nii data
+        self.updatePanels(update_ima=True)
 
     def updateCluster(self):
         """Defines actions when Cluster button is pressed."""
@@ -391,21 +413,8 @@ class morphViewer(QtGui.QWidget):
         # indicate that axes 0 and 1 were transposed
         self.trnspCount = self.trnspCount[[2, 0, 1]]
         self.flpCount = self.flpCount[[2, 0, 1]]
-        
         # change browser values
         self.browser_ind = self.browser_ind[[2, 0, 1]]
-        if self.browser_ind[0] > self.data.shape[0]:
-            self.browser_ind[0] = int(
-                (self.browser_ind[0]/self.browser_ind[2]) *
-                 self.browser_ind[0])
-        if self.browser_ind[1] > self.data.shape[1]:
-            self.browser_ind[1] = int(
-                (self.browser_ind[1]/self.browser_ind[0]) *
-                 self.browser_ind[1])
-        if self.browser_ind[2] > self.data.shape[2]:
-            self.browser_ind[2] = int(
-                (self.browser_ind[2]/self.browser_ind[1]) *
-                 self.browser_ind[2])
         # update image of nii data
         self.updatePanels(update_ima=True, update_slider=True,
                           update_boxes=True)
